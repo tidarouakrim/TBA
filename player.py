@@ -1,6 +1,23 @@
 # Define the Player class.
 class Player():
+    """
+    This class represents a player in a adventure game
+    Attributes:
+        name (str) =  le nom du joueur 
+        current_room (Room) =   le lieu dans lequel se trouve le joueur 
 
+    Methods:
+        __init__(self, name) : The constructor.
+
+    Examples:
+
+    >>> p = Player("Julie")
+    >>> p.name
+    'Julie'
+    >>> player.current_room
+    none
+ 
+    """
     # Define the constructor.
     def __init__(self, name):
         self.name = name
