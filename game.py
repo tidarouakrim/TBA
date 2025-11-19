@@ -1,7 +1,6 @@
 # Description: Game class
 
-# Import modules
-
+#
 from room import Room
 from player import Player
 from command import Command
@@ -9,12 +8,14 @@ from actions import Actions
 
 class Game:
 
-    # Constructor
+    # Constructor Import modules
+
     def __init__(self):
         self.finished = False
         self.rooms = []
         self.commands = {}
         self.player = None
+        self.direction=set()
     
     # Setup the game
     def setup(self):
@@ -25,37 +26,44 @@ class Game:
         self.commands["help"] = help
         quit = Command("quit", " : quitter le jeu", Actions.quit, 0)
         self.commands["quit"] = quit
-        go = Command("go", " <direction> : se déplacer dans une direction cardinale (N, E, S, O)", Actions.go, 1)
+        go = Command("go", " <direction> : se déplacer dans une direction cardinale (N, E, S, O, U, D)", Actions.go, 1)
         self.commands["go"] = go
         
         # Setup rooms
-
-        forest = Room("Forest", " une forêt enchantée. Vous entendez une brise légère à travers la cime des arbres.")
-        self.rooms.append(forest)
-        tower = Room("Tower", " une immense tour en pierre qui s'élève au dessus des nuages.")
-        self.rooms.append(tower)
-        cave = Room("Cave", " une grotte profonde et sombre. Des voix semblent provenir des profondeurs.")
-        self.rooms.append(cave)
-        cottage = Room("Cottage", " un petit chalet pittoresque avec un toit de chaume. Une épaisse fumée verte sort de la cheminée.")
-        self.rooms.append(cottage)
-        swamp = Room("Swamp", " un marécage sombre et ténébreux. L'eau bouillonne, les abords sont vaseux.")
-        self.rooms.append(swamp)
-        castle = Room("Castle", " un énorme château fort avec des douves et un pont levis. Sur les tours, des flèches en or massif.")
-        self.rooms.append(castle)
-
+        gare = Room("Gare", " une gare élégante où l’Orient Express attend, luxueux et mystérieux, prêt à traverser l’Europe.")
+        self.rooms.append(gare)
+        wagon_1_classe = Room("wagon_1_classe", " le wagon de première classe, luxueusement décoré, avec des sièges en velours, des tables basses et des lampes dorées.")
+        self.rooms.append(wagon_1_classe)
+        wagon_restaurant= Room("wagon_restaurant", " le wagon restaurant somptueux, aux nappes blanches et lumières tamisées.")
+        self.rooms.append(wagon_restaurant)
+        wagon_lits = Room("wagon_lits", " le wagon lit de luxe, où les somptueux lits forment un véritable labyrinthe.")
+        self.rooms.append(wagon_lits)
+        wagon_bibliotheque = Room("wagon_bibliothèque", " le wagon bibliothèque silencieux, rempli de livres anciens.")
+        self.rooms.append(wagon_bibliotheque)
+        wagon_bagagiste = Room("wagon_bagagiste", " le wagon bagages, où valises et coffres s’entassent et quelques affaires traînent sur le sol.")
+        self.rooms.append(wagon_bagagiste)
+        wagon_memoire = Room("wagon_memoire", " Vous êtes dans le Wagon Mémoire, sombre et silencieux, où le contrôleur vous observe attentivement.")
+        self.rooms.append(wagon_memoire)
+        locomotive = Room("locomotive", " Félicitations vous arrivez à votre destination ! Bon voyage...")
+        self.rooms.append(locomotive)
         # Create exits for rooms
-
-        forest.exits = {"N" : cave, "E" : None, "S" : castle, "O" : None}
-        tower.exits = {"N" : cottage, "E" : None, "S" : None, "O" : None}
-        cave.exits = {"N" : None, "E" : cottage, "S" : forest, "O" : None}
-        cottage.exits = {"N" : None, "E" : None, "S" : tower, "O" : cave}
-        swamp.exits = {"N" : tower, "E" : None, "S" : None, "O" : castle}
-        castle.exits = {"N" : forest, "E" : swamp, "S" : None, "O" : None}
+        gare.exits = {"N" : None, "E" : wagon_1_classe, "S" : None, "O" : None,"U" : None, "D" : None}
+        wagon_1_classe.exits = {"N" :None , "E" : None, "S" : None, "O" : None, "U" : wagon_restaurant, "D" : None}
+        wagon_restaurant.exits = {"N" : wagon_lits, "E" : None, "S" : None, "O" : None, "U" : None, "D" : wagon_1_classe}
+        wagon_lits.exits = {"N" : None, "E" : None, "S" : None, "O" : None, "U" : None , "D" : wagon_bibliotheque}
+        wagon_bibliotheque.exits = {"N" : wagon_bagagiste, "E" : None, "S" : None, "O" : None, "U" : None, "D" : wagon_lits}
+        wagon_bagagiste.exits = {"N" : None, "E" : None, "S" : None, "O" : None, "U" : wagon_memoire, "D" : None}
+        wagon_memoire.exits = {"N" : locomotive, "E" : None, "S" : None, "O" : None, "U" : None, "D" : wagon_bagagiste}
+        locomotive.exits = {"N" : None, "E" : None, "S" : None, "O" : None,"U" : None, "D" : None}
+        
+        # Renseigner toutes les directions utilisées 
+        for room in self.rooms:
+            self.direction.update(room.exits.keys())
 
         # Setup player and starting room
 
         self.player = Player(input("\nEntrez votre nom: "))
-        self.player.current_room = swamp
+        self.player.current_room = gare
 
     # Play the game
     def play(self):
@@ -91,7 +99,7 @@ class Game:
 
     # Print the welcome message
     def print_welcome(self):
-        print(f"\nBienvenue {self.player.name} dans ce jeu d'aventure !")
+        print(f"\nBienvenue {self.player.name} prenez place : votre aventure commence à bord de l’Orient Expres !")
         print("Entrez 'help' si vous avez besoin d'aide.")
         #
         print(self.player.current_room.get_long_description())
