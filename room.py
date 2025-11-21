@@ -16,9 +16,9 @@ class Room:
 
     >>> 
     >>> room.name
-    'forest'
+    'gare'
     >>> room.description
-    'dans une forêt enchantée. Vous entendez une brise légère à travers la cime des arbres'
+    'une gare élégante où l’Orient Express attend, luxueux et mystérieux, prêt à traverser l’Europe'
     >>> room.exits
     {}
     """

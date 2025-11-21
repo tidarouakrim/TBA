@@ -28,6 +28,10 @@ class Game:
         self.commands["quit"] = quit
         go = Command("go", " <direction> : se déplacer dans une direction cardinale (N, E, S, O, U, D)", Actions.go, 1)
         self.commands["go"] = go
+        history = Command("history", " : afficher l'historique des pièces visitées", Actions.history, 0)
+        self.commands["history"] = history
+        back = Command("back", " : retourner en arrière", Actions.back, 0)
+        self.commands["back"] = back
         
         # Setup rooms
         gare = Room("Gare", " une gare élégante où l’Orient Express attend, luxueux et mystérieux, prêt à traverser l’Europe.")
@@ -42,9 +46,9 @@ class Game:
         self.rooms.append(wagon_bibliotheque)
         wagon_bagagiste = Room("wagon_bagagiste", " le wagon bagages, où valises et coffres s’entassent et quelques affaires traînent sur le sol.")
         self.rooms.append(wagon_bagagiste)
-        wagon_memoire = Room("wagon_memoire", " Vous êtes dans le Wagon Mémoire, sombre et silencieux, où le contrôleur vous observe attentivement.")
+        wagon_memoire = Room("wagon_memoire", " le Wagon Mémoire, sombre et silencieux, où le contrôleur vous observe attentivement.")
         self.rooms.append(wagon_memoire)
-        locomotive = Room("locomotive", " Félicitations vous arrivez à votre destination ! Bon voyage...")
+        locomotive = Room("locomotive", " la locomotive! Félicitations vous arrivez à votre destination ! Bon voyage...")
         self.rooms.append(locomotive)
         # Create exits for rooms
         gare.exits = {"N" : None, "E" : wagon_1_classe, "S" : None, "O" : None,"U" : None, "D" : None}
