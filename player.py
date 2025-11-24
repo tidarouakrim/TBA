@@ -19,11 +19,13 @@ class Player():
  
     """
     # Define the constructor.
-    def __init__(self, name):
+    def __init__(self, name, max_weight=6):
         self.name = name
         self.current_room = None
         self.history = []
-    
+        self.inventory = {}
+        self.max_weight = max_weight
+        
     # Define the move method.
     def move(self, direction):
         # Get the next room from the exits dictionary of the current room.
@@ -72,3 +74,18 @@ class Player():
         print(self.get_history())
 
         return True
+    
+    def get_inventory(self):
+        """
+        Affiche le contenu de l'inventaire du joueur.
+        """
+        if len(self.inventory) == 0:
+            return "Vous n'avez rien dans votre inventaire."
+
+        result = "Vous disposez des items suivants:\n"
+        for name, item in self.inventory.items():
+            result += f"    - {name} : {item.description} ({item.weight} kg)\n"
+        return result
+    
+    def current_weight(self):
+        return sum(item.weight for item in self.inventory.values())

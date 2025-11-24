@@ -173,3 +173,84 @@ class Actions:
             return False
 
         return game.player.back()
+    
+    def look(game, list_of_words, number_of_parameters):
+        if len(list_of_words) != number_of_parameters + 1:
+            command_word = list_of_words[0]
+            print(MSG0.format(command_word=command_word))
+            return False
+        
+        # Récupérer la pièce actuelle
+        room = game.player.current_room
+
+        # Afficher description de la pièce
+        print(room.get_long_description())
+
+        # Afficher les items via get_inventory()
+        print(room.get_inventory())
+
+        return True
+    
+    def take(game, list_of_words, number_of_parameters):
+         
+        item_name = list_of_words[1]
+
+        room = game.player.current_room  # pièce actuelle
+
+        # Vérifier si l'objet est présent dans la pièce
+        if item_name not in room.inventory:
+            print(f"L'objet '{item_name}' n'est pas dans la pièce.")
+            return False
+
+        # Récupérer l’objet
+        item = room.inventory[item_name]
+
+        # Vérifier le poids total
+        if game.player.current_weight() + item.weight > game.player.max_weight:
+            print(f"Vous ne pouvez pas prendre '{item_name}', trop lourd !")
+            return False
+
+
+        # Ajouter à l’inventaire du joueur
+        game.player.inventory[item_name] = item
+
+        # Retirer de la pièce
+        del room.inventory[item_name]
+        print(f"Vous avez pris l'objet '{item_name}'.")
+        return True
+    
+
+    def drop(game, list_of_words, number_of_parameters):
+        if len(list_of_words) != number_of_parameters + 1:
+            command_word = list_of_words[0]
+            print(MSG0.format(command_word=command_word))
+            return False
+
+        # item à déposer
+        item_name = list_of_words[1]
+
+        # Pièce actuelle du joueur
+        room = game.player.current_room
+
+        # Vérifier si l'objet est dans l'inventaire du joueur
+        if item_name not in game.player.inventory:
+            print(f"L'objet '{item_name}' n'est pas dans l'inventaire.")
+            return False
+        
+         # Récupérer l’item
+        item = game.player.inventory[item_name]
+
+         # Ajouter à l'inventaire de la pièce
+        room.inventory[item_name] = item
+
+        # Retirer de l’inventaire du joueur
+        del game.player.inventory[item_name]
+        print(f"Vous avez déposé l'objet '{item_name}'.")
+
+        return True
+    
+    def check(game, list_of_words, number_of_parameters):
+        # Afficher l'inventaire du joueur
+        print(game.player.get_inventory())
+
+        return True
