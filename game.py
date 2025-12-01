@@ -60,13 +60,13 @@ class Game:
         locomotive = Room("locomotive", " la locomotive! Félicitations vous arrivez à votre destination ! Bon voyage...")
         self.rooms.append(locomotive)
         # Create exits for rooms
-        gare.exits = {"N" : None, "E" : wagon_1_classe, "S" : None, "O" : None,"U" : None, "D" : None}
-        wagon_1_classe.exits = {"N" :None , "E" : None, "S" : None, "O" : None, "U" : wagon_restaurant, "D" : None}
-        wagon_restaurant.exits = {"N" : wagon_lits, "E" : None, "S" : None, "O" : None, "U" : None, "D" : wagon_1_classe}
-        wagon_lits.exits = {"N" : None, "E" : None, "S" : None, "O" : None, "U" : None , "D" : wagon_bibliotheque}
-        wagon_bibliotheque.exits = {"N" : wagon_bagagiste, "E" : None, "S" : None, "O" : None, "U" : None, "D" : wagon_lits}
-        wagon_bagagiste.exits = {"N" : None, "E" : None, "S" : None, "O" : None, "U" : wagon_memoire, "D" : None}
-        wagon_memoire.exits = {"N" : locomotive, "E" : None, "S" : None, "O" : None, "U" : None, "D" : wagon_bagagiste}
+        gare.exits = {"N" : None, "E" : 1_classe, "S" : None, "O" : None,"U" : None, "D" : None}
+        1_classe.exits = {"N" :None , "E" : None, "S" : None, "O" : None, "U" : restaurant, "D" : None}
+        restaurant.exits = {"N" : dortoir, "E" : None, "S" : None, "O" : None, "U" : None, "D" : 1_classe}
+        dortoir.exits = {"N" : None, "E" : None, "S" : None, "O" : None, "U" : None , "D" : bibliotheque}
+        bibliotheque.exits = {"N" : espace_bagage, "E" : None, "S" : None, "O" : None, "U" : None, "D" : }
+        espace_bagage.exits = {"N" : None, "E" : None, "S" : None, "O" : None, "U" : bureau_du_maitre_du_jeu, "D" : None}
+        bureau_du_maitre_du_jeu.exits = {"N" : locomotive, "E" : None, "S" : None, "O" : None, "U" : None, "D" : espace_bagage}
         locomotive.exits = {"N" : None, "E" : None, "S" : None, "O" : None,"U" : None, "D" : None}
         
         # Ajouter des items à wagon_1_classe
@@ -104,33 +104,33 @@ class Game:
         
 
 
-        wagon_1_classe.inventory[coffre.name] = coffre
-        wagon_1_classe.inventory[tapis.name] = tapis
-        wagon_1_classe.inventory[lampe.name] = lampe
-        wagon_1_classe.inventory[livre.name] = livre
-        wagon_1_classe.inventory[cle.name] = cle
-        wagon_1_classe.inventory[note.name] = note
+        1_classe.inventory[coffre.name] = coffre
+        1_classe.inventory[tapis.name] = tapis
+        1_classe.inventory[lampe.name] = lampe
+        1_classe.inventory[livre.name] = livre
+        1_classe.inventory[cle.name] = cle
+        1_classe.inventory[note.name] = note
 
-        wagon_restaurant.inventory[fourchette.name] = fourchette
-        wagon_restaurant.inventory[couteau.name] = couteau
-        wagon_restaurant.inventory[carafe.name] = carafe
-        wagon_restaurant.inventory[serviette.name] = serviette
-        wagon_restaurant.inventory[livre_recettes.name] = livre_recettes
-        wagon_restaurant.inventory[sel.name] = sel
-        wagon_restaurant.inventory[ragout.name] = ragout
-        wagon_restaurant.inventory[salade.name] = salade
-        wagon_restaurant.inventory[gratin.name] = gratin
+        restaurant.inventory[fourchette.name] = fourchette
+        restaurant.inventory[couteau.name] = couteau
+        restaurant.inventory[carafe.name] = carafe
+        restaurant.inventory[serviette.name] = serviette
+        restaurant.inventory[livre_recettes.name] = livre_recettes
+        restaurant.inventory[sel.name] = sel
+        restaurant.inventory[ragout.name] = ragout
+        restaurant.inventory[salade.name] = salade
+        restaurant.inventory[gratin.name] = gratin
 
-        wagon_bibliotheque.inventory[livre1.name] = livre1
-        wagon_bibliotheque.inventory[livre2.name] = livre2
-        wagon_bibliotheque.inventory[livre3.name] = livre3
-        wagon_bibliotheque.inventory[livre4.name] = livre4
-        wagon_bibliotheque.inventory[livre5.name] = livre5
-        wagon_bibliotheque.inventory[livre6.name] = livre6
+        bibliotheque.inventory[livre1.name] = livre1
+        bibliotheque.inventory[livre2.name] = livre2
+        bibliotheque.inventory[livre3.name] = livre3
+        bibliotheque.inventory[livre4.name] = livre4
+        bibliotheque.inventory[livre5.name] = livre5
+        bibliotheque.inventory[livre6.name] = livre6
 
-        wagon_bagagiste.inventory[montre.name] = montre
-        wagon_bagagiste.inventory[parapluie.name] = parapluie
-        wagon_bagagiste.inventory[lettre.name] = lettre
+        espace_bagage.inventory[montre.name] = montre
+        espace_bagage.inventory[parapluie.name] = parapluie
+        espace_bagage.inventory[lettre.name] = lettre
 
         # Renseigner toutes les directions utilisées 
         for room in self.rooms:
