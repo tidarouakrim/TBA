@@ -43,20 +43,20 @@ class Game:
         self.commands["check"] = check
         
         # Setup rooms
-        gare = Room("Gare", " une gare élégante où l’Orient Express attend, luxueux et mystérieux, prêt à traverser l’Europe.")
+        gare = Room("gare", " la gare de départ de l’Orient Express, entouré de voyageurs élégants et de valises en cuir.")
         self.rooms.append(gare)
-        piece1 = Room("piece1", " le wagon de première classe, luxueusement décoré, avec des sièges en velours, des tables basses et des lampes dorées.")
+        piece1 = Room("piece1", " dans le niveau bas de première classe du premier wagon , luxueusement décoré, avec des sièges en velours, des tables basses et des lampes dorées.")
         self.rooms.append(piece1)
-        restaurant= Room("restaurant", " le wagon restaurant somptueux, aux nappes blanches et lumières tamisées.")
+        restaurant= Room("restaurant", " le niveau haut du premier wagon, dans le restaurant somptueux, aux nappes blanches et lumières tamisées.")
         self.rooms.append(restaurant)
-        dortoir = Room("dortoir", " le wagon lit de luxe, où les somptueux lits forment un véritable labyrinthe.")
+        dortoir = Room("dortoir", " le niveau bas du deuxième wagon, dans le dortoir de luxe, où les somptueux lits forment un véritable labyrinthe.")
         self.rooms.append(dortoir)
-        bibliotheque = Room("bibliothèque", " le wagon bibliothèque silencieux, rempli de livres anciens.")
+        bibliotheque = Room("bibliothèque", " le niveau haut du deuxième wagon dans la bibliothèque silencieuse, remplie de livres anciens.")
         self.rooms.append(bibliotheque)
-        espace_bagage = Room("espace_bagage", " le wagon bagages, où valises et coffres s’entassent et quelques affaires traînent sur le sol.")
+        espace_bagage = Room("espace_bagage", " le niveau bas du troisième wagon dans l'espace bagage, où valises et coffres s’entassent et quelques affaires traînent sur le sol.")
         self.rooms.append(espace_bagage)
-        bureau_du_maitre_du_jeu = Room("bureau_du_maitre_du_jeu", " le Wagon Mémoire, sombre et silencieux, où le contrôleur vous observe attentivement.")
-        self.rooms.append(bureau_du_maitre_du_jeu)
+        bureau_du_maitre_du_Jeu = Room("bureau_du_Maitre_du_jeu", " le niveau haut du troisième wagon dans le bureau du Maitre du jeu , sombre et silencieux, où le contrôleur vous observe attentivement.")
+        self.rooms.append(bureau_du_maitre_du_Jeu)
         locomotive = Room("locomotive", " la locomotive! Félicitations vous arrivez à votre destination ! Bon voyage...")
         self.rooms.append(locomotive)
         # Create exits for rooms
@@ -65,8 +65,8 @@ class Game:
         restaurant.exits = {"N" : dortoir, "E" : None, "S" : None, "O" : None, "U" : None, "D" : piece1}
         dortoir.exits = {"N" : None, "E" : None, "S" : None, "O" : None, "U" : None , "D" : bibliotheque}
         bibliotheque.exits = {"N" : espace_bagage, "E" : None, "S" : None, "O" : None, "U" : None, "D" : dortoir }
-        espace_bagage.exits = {"N" : None, "E" : None, "S" : None, "O" : None, "U" : bureau_du_maitre_du_jeu, "D" : None}
-        bureau_du_maitre_du_jeu.exits = {"N" : locomotive, "E" : None, "S" : None, "O" : None, "U" : None, "D" : espace_bagage}
+        espace_bagage.exits = {"N" : None, "E" : None, "S" : None, "O" : None, "U" : bureau_du_maitre_du_Jeu, "D" : None}
+        bureau_du_maitre_du_Jeu.exits = {"N" : locomotive, "E" : None, "S" : None, "O" : None, "U" : None, "D" : espace_bagage}
         locomotive.exits = {"N" : None, "E" : None, "S" : None, "O" : None,"U" : None, "D" : None}
         
         # Ajouter des items à wagon_1_classe
