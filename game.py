@@ -45,26 +45,26 @@ class Game:
         # Setup rooms
         gare = Room("Gare", " une gare élégante où l’Orient Express attend, luxueux et mystérieux, prêt à traverser l’Europe.")
         self.rooms.append(gare)
-        wagon_1_classe = Room("wagon_1_classe", " le wagon de première classe, luxueusement décoré, avec des sièges en velours, des tables basses et des lampes dorées.")
-        self.rooms.append(wagon_1_classe)
-        wagon_restaurant= Room("wagon_restaurant", " le wagon restaurant somptueux, aux nappes blanches et lumières tamisées.")
-        self.rooms.append(wagon_restaurant)
-        wagon_lits = Room("wagon_lits", " le wagon lit de luxe, où les somptueux lits forment un véritable labyrinthe.")
-        self.rooms.append(wagon_lits)
-        wagon_bibliotheque = Room("wagon_bibliothèque", " le wagon bibliothèque silencieux, rempli de livres anciens.")
-        self.rooms.append(wagon_bibliotheque)
-        wagon_bagagiste = Room("wagon_bagagiste", " le wagon bagages, où valises et coffres s’entassent et quelques affaires traînent sur le sol.")
-        self.rooms.append(wagon_bagagiste)
-        wagon_memoire = Room("wagon_memoire", " le Wagon Mémoire, sombre et silencieux, où le contrôleur vous observe attentivement.")
-        self.rooms.append(wagon_memoire)
+        piece1 = Room("piece1", " le wagon de première classe, luxueusement décoré, avec des sièges en velours, des tables basses et des lampes dorées.")
+        self.rooms.append(piece1)
+        restaurant= Room("restaurant", " le wagon restaurant somptueux, aux nappes blanches et lumières tamisées.")
+        self.rooms.append(restaurant)
+        dortoir = Room("dortoir", " le wagon lit de luxe, où les somptueux lits forment un véritable labyrinthe.")
+        self.rooms.append(dortoir)
+        bibliotheque = Room("bibliothèque", " le wagon bibliothèque silencieux, rempli de livres anciens.")
+        self.rooms.append(bibliotheque)
+        espace_bagage = Room("espace_bagage", " le wagon bagages, où valises et coffres s’entassent et quelques affaires traînent sur le sol.")
+        self.rooms.append(espace_bagage)
+        bureau_du_maitre_du_jeu = Room("bureau_du_maitre_du_jeu", " le Wagon Mémoire, sombre et silencieux, où le contrôleur vous observe attentivement.")
+        self.rooms.append(bureau_du_maitre_du_jeu)
         locomotive = Room("locomotive", " la locomotive! Félicitations vous arrivez à votre destination ! Bon voyage...")
         self.rooms.append(locomotive)
         # Create exits for rooms
-        gare.exits = {"N" : None, "E" : 1_classe, "S" : None, "O" : None,"U" : None, "D" : None}
-        1_classe.exits = {"N" :None , "E" : None, "S" : None, "O" : None, "U" : restaurant, "D" : None}
-        restaurant.exits = {"N" : dortoir, "E" : None, "S" : None, "O" : None, "U" : None, "D" : 1_classe}
+        gare.exits = {"N" : None, "E" : piece1, "S" : None, "O" : None,"U" : None, "D" : None}
+        piece1.exits = {"N" :None , "E" : None, "S" : None, "O" : None, "U" : restaurant, "D" : None}
+        restaurant.exits = {"N" : dortoir, "E" : None, "S" : None, "O" : None, "U" : None, "D" : piece1}
         dortoir.exits = {"N" : None, "E" : None, "S" : None, "O" : None, "U" : None , "D" : bibliotheque}
-        bibliotheque.exits = {"N" : espace_bagage, "E" : None, "S" : None, "O" : None, "U" : None, "D" : }
+        bibliotheque.exits = {"N" : espace_bagage, "E" : None, "S" : None, "O" : None, "U" : None, "D" : dortoir }
         espace_bagage.exits = {"N" : None, "E" : None, "S" : None, "O" : None, "U" : bureau_du_maitre_du_jeu, "D" : None}
         bureau_du_maitre_du_jeu.exits = {"N" : locomotive, "E" : None, "S" : None, "O" : None, "U" : None, "D" : espace_bagage}
         locomotive.exits = {"N" : None, "E" : None, "S" : None, "O" : None,"U" : None, "D" : None}
@@ -104,12 +104,12 @@ class Game:
         
 
 
-        1_classe.inventory[coffre.name] = coffre
-        1_classe.inventory[tapis.name] = tapis
-        1_classe.inventory[lampe.name] = lampe
-        1_classe.inventory[livre.name] = livre
-        1_classe.inventory[cle.name] = cle
-        1_classe.inventory[note.name] = note
+        piece1.inventory[coffre.name] = coffre
+        piece1.inventory[tapis.name] = tapis
+        piece1.inventory[lampe.name] = lampe
+        piece1.inventory[livre.name] = livre
+        piece1.inventory[cle.name] = cle
+        piece1.inventory[note.name] = note
 
         restaurant.inventory[fourchette.name] = fourchette
         restaurant.inventory[couteau.name] = couteau
