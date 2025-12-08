@@ -254,3 +254,27 @@ class Actions:
         print(game.player.get_inventory())
 
         return True
+    
+    def beamer_charge(game, list_of_words, number_of_parameters):
+
+    # vérifie si joueur possède le beamer
+        if "beamer" not in game.player.inventory:
+            print("Vous n'avez pas de beamer sur vous.")
+            return False
+
+        beamer = game.player.inventory["beamer"]
+
+    # enregistrer la room actuelle
+        beamer.charged_room = game.player.current_room
+        print(f" Le beamer a mémorisé cette pièce : {game.player.current_room.name}")
+
+        # vérifier qu'il est chargé
+        if beamer.charged_room is None:
+            print("Le beamer n'est pas chargé.")
+            return False
+       
+    # téléporter
+        print(f" Le beamer s’active... Vous êtes téléporté dans : {beamer.charged_room.name}")
+        game.player.current_room = beamer.charged_room
+
+        return True

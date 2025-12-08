@@ -18,3 +18,8 @@ class Item:
         Exemple : sword : une épée au fil tranchant comme un rasoir (2 kg)
         """
         return f"{self.name} : {self.description} ({self.weight} kg)"
+    
+class Beamer(Item):
+    def __init__(self, name="beamer", description="Un appareil qui permet de mémoriser des lieux.", weight=1):
+        super().__init__(name, description, weight)
+        self.charged_room = None

@@ -96,6 +96,7 @@ class Game:
         livre4 = Item("livre4", "titre", 1)
         livre5 = Item("livre5", "titre", 1)
         livre6 = Item("livre6", "titre", 1)
+        beamer= Item("beamer", "Un appareil qui permet de mémoriser des lieux.", 1)
         
         # Ajouter des items à wagon_bagagiste
         montre = Item("montre", "descrip", 1)
@@ -127,6 +128,7 @@ class Game:
         bibliotheque.inventory[livre4.name] = livre4
         bibliotheque.inventory[livre5.name] = livre5
         bibliotheque.inventory[livre6.name] = livre6
+        bibliotheque.inventory[beamer.name] = beamer
 
         espace_bagage.inventory[montre.name] = montre
         espace_bagage.inventory[parapluie.name] = parapluie
