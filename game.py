@@ -6,6 +6,7 @@ from player import Player
 from command import Command
 from actions import Actions
 from item import Item
+from item import Beamer
 
 class Game:
 
@@ -41,6 +42,10 @@ class Game:
         self.commands["drop"] = drop
         check = Command("check", " <item> : vérifier son inventaire", Actions.check, 1)
         self.commands["check"] = check
+        beamer_charge = Command("beamer_charge", " : charger le beamer", Actions.beamer_charge, 0)
+        self.commands["beamer_charge"] = beamer_charge
+        beamer_teleportation = Command("beamer_teleportation", " : utiliser le beamer pour retourner à l'endroit chargé", Actions.beamer_teleportation, 0)
+        self.commands["beamer_teleportation"] = beamer_teleportation
         
         # Setup rooms
         gare = Room("gare", " la gare de départ de l’Orient Express, entouré de voyageurs élégants et de valises en cuir.")
@@ -96,7 +101,6 @@ class Game:
         livre4 = Item("livre4", "titre", 1)
         livre5 = Item("livre5", "titre", 1)
         livre6 = Item("livre6", "titre", 1)
-        beamer= Item("beamer", "Un appareil qui permet de mémoriser des lieux.", 1)
         
         # Ajouter des items à wagon_bagagiste
         montre = Item("montre", "descrip", 1)
@@ -122,6 +126,7 @@ class Game:
         restaurant.inventory[salade.name] = salade
         restaurant.inventory[gratin.name] = gratin
 
+        beamer = Beamer()
         bibliotheque.inventory[livre1.name] = livre1
         bibliotheque.inventory[livre2.name] = livre2
         bibliotheque.inventory[livre3.name] = livre3
@@ -129,6 +134,7 @@ class Game:
         bibliotheque.inventory[livre5.name] = livre5
         bibliotheque.inventory[livre6.name] = livre6
         bibliotheque.inventory[beamer.name] = beamer
+
 
         espace_bagage.inventory[montre.name] = montre
         espace_bagage.inventory[parapluie.name] = parapluie
