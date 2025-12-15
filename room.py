@@ -29,6 +29,7 @@ class Room:
         self.description = description
         self.exits = {}
         self.inventory = {}
+        self.characters = {}
     
     # Define the get_exit method.
     def get_exit(self, direction):
@@ -61,4 +62,12 @@ class Room:
         result = "on voit:\n"
         for name, item in self.inventory.items():
             result += f"    - {name} : {item.description} ({item.weight} kg)\n"
+        
+    
+        if len(self.character) == 0:
+            return "Il n'y a personne ici."
+
+        result = "on voit:\n"
+        for name, character in self.character.items():
+            result += f"    - {character})\n"
         return result
