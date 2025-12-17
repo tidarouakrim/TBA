@@ -54,20 +54,24 @@ class Room:
 
     def get_inventory(self):
         """
-        Affiche le contenu de l'inventaire du joueur.
+        Affiche le contenu de l'inventaire du joueur et les personnages présents.
         """
-        if len(self.inventory) == 0:
+
+        if len(self.inventory) == 0 and len(self.characters) == 0:
             return "Il n'y a rien ici."
-
-        result = "on voit:\n"
-        for name, item in self.inventory.items():
-            result += f"    - {name} : {item.description} ({item.weight} kg)\n"
         
-    
-        if len(self.character) == 0:
-            return "Il n'y a personne ici."
-
         result = "on voit:\n"
-        for name, character in self.character.items():
-            result += f"    - {character})\n"
+
+        if len(self.inventory) > 0:
+            for name, item in self.inventory.items():
+                result += f"    - {name} : {item.description} ({item.weight} kg)\n"
+        else:
+            result += "    - Aucun objet ici.\n"
+        
+        if len(self.characters) > 0:
+            for name, character in self.characters.items():
+                    result += f"    - {character}\n"
+        else:
+            result += "    - Il n'y a personne ici.\n"
+
         return result
