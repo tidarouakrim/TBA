@@ -47,7 +47,9 @@ class Game:
         self.commands["beamer_charge"] = beamer_charge
         beamer_teleportation = Command("beamer_teleportation", " : utiliser le beamer pour retourner à l'endroit chargé", Actions.beamer_teleportation, 0)
         self.commands["beamer_teleportation"] = beamer_teleportation
-        
+        talk = Command("talk", " <someone> : parler à quelqu'un", Actions.talk, 1)
+        self.commands["talk"] = talk
+
         # Setup rooms
         gare = Room("gare", " la gare de départ de l’Orient Express, entouré de voyageurs élégants et de valises en cuir.")
         self.rooms.append(gare)
@@ -74,7 +76,7 @@ class Game:
         espace_bagage.exits = {"N" : None, "E" : None, "S" : None, "O" : None, "U" : bureau_du_maitre_du_Jeu, "D" : None}
         bureau_du_maitre_du_Jeu.exits = {"N" : locomotive, "E" : None, "S" : None, "O" : None, "U" : None, "D" : espace_bagage}
         locomotive.exits = {"N" : None, "E" : None, "S" : None, "O" : None,"U" : None, "D" : None}
-        
+        quit
         # Ajouter des items à wagon_1_classe
         coffre = Item("coffre", "Un coffre ancien et verrouillé", 5)
         tapis = Item("tapis", "Un tapis fin et coloré", 1)
@@ -173,10 +175,15 @@ class Game:
 
             # Get the command from the player
             self.process_command(input("> "))
-            # Décplace les pnj
+            # Récupérer TOUS les PNJ une seule fois
+            all_characters = set()
+
             for room in self.rooms:
-                for character in list(room.characters.values()):
-                        character.move()
+                all_characters.update(room.characters.values())
+
+            # Les faire agir UNE SEULE FOIS
+            for character in all_characters:
+                character.move()
 
     # Process the command entered by the player
     def process_command(self, command_string) -> None:

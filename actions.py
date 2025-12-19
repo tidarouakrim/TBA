@@ -286,3 +286,24 @@ class Actions:
         game.player.current_room = beamer.charged_room
         print(f" Téléportation vers : {beamer.charged_room.name}")
         return True
+    
+
+    def talk(game, list_of_words, number_of_parameters):
+
+        if len(list_of_words) != number_of_parameters + 1:
+            print(f"Usage : talk <someone>")
+            return False
+
+        pnj_name = list_of_words[1]
+        room = game.player.current_room
+
+        # Vérifie si le PNJ est dans la pièce
+        if pnj_name not in room.characters:
+            print(f"{pnj_name} n'est pas ici.")
+            return False
+
+        # Fait parler le PNJ
+        pnj_name = room.characters[pnj_name]
+        pnj_name.get_msg()
+        return True
+
