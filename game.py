@@ -84,7 +84,7 @@ class Game:
         livre = Item("livre", "Un livre ouvert sur un siège", 1)
         cle = Item("clé", "Une clé cachée sous un coussin", 0.1)
         note = Item("note", "Une petite note mystérieuse", 0.05)
-        Madame_Loisel = Character("Madame Loisel", "Une dame élégante.", piece1, ["Avez-vous vu mon collier perdu?"])
+        Madame_Loisel = Character("MadameLoisel", "Une dame élégante.", piece1, ["Avez-vous vu mon collier perdu?"])
     
         # Ajouter des items à wagon_restaurant
         ragout= Item("ragoût", "Un ragoût de bœuf fumant et appétissant", 1.2)
@@ -106,6 +106,7 @@ class Game:
         livre5 = Item("livre5", "titre", 1)
         livre6 = Item("livre6", "titre", 1)
         beamer= Item("beamer", "Un appareil qui permet de mémoriser des lieux.", 1)
+        Bibliothécaire = Character("Bibliothécaire", "Un personnage qui garde les livres.", bibliotheque, ["Chut! Ici c'est une bibliothèque."])
         
         # Ajouter des items à wagon_bagagiste
         montre = Item("montre", "descrip", 1)
@@ -146,6 +147,8 @@ class Game:
         bibliotheque.inventory[livre5.name] = livre5
         bibliotheque.inventory[livre6.name] = livre6
         bibliotheque.inventory[beamer.name] = beamer
+        bibliotheque.characters[Bibliothécaire.name] = Bibliothécaire
+
 
         espace_bagage.inventory[montre.name] = montre
         espace_bagage.inventory[parapluie.name] = parapluie
@@ -172,18 +175,9 @@ class Game:
 
         # Loop until the game is finished
         while not self.finished:
-
             # Get the command from the player
             self.process_command(input("> "))
-            # Récupérer TOUS les PNJ une seule fois
-            all_characters = set()
-
-            for room in self.rooms:
-                all_characters.update(room.characters.values())
-
-            # Les faire agir UNE SEULE FOIS
-            for character in all_characters:
-                character.move()
+        return None
 
     # Process the command entered by the player
     def process_command(self, command_string) -> None:
