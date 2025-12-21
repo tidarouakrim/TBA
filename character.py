@@ -51,5 +51,20 @@ class Character:
         self.current_room = new_room
 
         return True
+    
+    def get_msg(self):
+        """
+        Affiche les messages du PNJ de manière cyclique.
+        """
+        if not self.msgs:
+            print("Le PNJ n'a rien à dire.")
+            return
+
+        # Prend le premier message
+        msg = self.msgs.pop(0)
+        print(msg)
+
+        # Remet le message à la fin pour continuer le cycle
+        self.msgs.append(msg)
 
 

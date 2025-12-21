@@ -47,7 +47,9 @@ class Game:
         self.commands["beamer_charge"] = beamer_charge
         beamer_teleportation = Command("beamer_teleportation", " : utiliser le beamer pour retourner à l'endroit chargé", Actions.beamer_teleportation, 0)
         self.commands["beamer_teleportation"] = beamer_teleportation
-        
+        talk = Command("talk", " <someone> : parler à quelqu'un", Actions.talk, 1)
+        self.commands["talk"] = talk
+
         # Setup rooms
         gare = Room("gare", " la gare de départ de l’Orient Express, entouré de voyageurs élégants et de valises en cuir.")
         self.rooms.append(gare)
@@ -74,7 +76,7 @@ class Game:
         espace_bagage.exits = {"N" : None, "E" : None, "S" : None, "O" : None, "U" : bureau_du_maitre_du_Jeu, "D" : None}
         bureau_du_maitre_du_Jeu.exits = {"N" : locomotive, "E" : None, "S" : None, "O" : None, "U" : None, "D" : espace_bagage}
         locomotive.exits = {"N" : None, "E" : None, "S" : None, "O" : None,"U" : None, "D" : None}
-        
+        quit
         # Ajouter des items à wagon_1_classe
         coffre = Item("coffre", "Un coffre ancien et verrouillé", 5)
         tapis = Item("tapis", "Un tapis fin et coloré", 1)
@@ -82,7 +84,7 @@ class Game:
         livre = Item("livre", "Un livre ouvert sur un siège", 1)
         cle = Item("clé", "Une clé cachée sous un coussin", 0.1)
         note = Item("note", "Une petite note mystérieuse", 0.05)
-        Madame_Loisel = Character("Madame Loisel", "Une dame élégante.", piece1, ["Avez-vous vu mon collier perdu?"])
+        Madame_Loisel = Character("MadameLoisel", "Une dame élégante.", piece1, ["Avez-vous vu mon collier perdu?"])
     
         # Ajouter des items à wagon_restaurant
         ragout= Item("ragoût", "Un ragoût de bœuf fumant et appétissant", 1.2)
@@ -104,6 +106,7 @@ class Game:
         livre5 = Item("livre5", "titre", 1)
         livre6 = Item("livre6", "titre", 1)
         beamer= Item("beamer", "Un appareil qui permet de mémoriser des lieux.", 1)
+        Bibliothécaire = Character("Bibliothécaire", "Un personnage qui garde les livres.", bibliotheque, ["Chut! Ici c'est une bibliothèque."])
         
         # Ajouter des items à wagon_bagagiste
         montre = Item("montre", "descrip", 1)
@@ -144,6 +147,8 @@ class Game:
         bibliotheque.inventory[livre5.name] = livre5
         bibliotheque.inventory[livre6.name] = livre6
         bibliotheque.inventory[beamer.name] = beamer
+        bibliotheque.characters[Bibliothécaire.name] = Bibliothécaire
+
 
         espace_bagage.inventory[montre.name] = montre
         espace_bagage.inventory[parapluie.name] = parapluie
@@ -170,13 +175,9 @@ class Game:
 
         # Loop until the game is finished
         while not self.finished:
-
             # Get the command from the player
             self.process_command(input("> "))
-            # Décplace les pnj
-            for room in self.rooms:
-                for character in list(room.characters.values()):
-                        character.move()
+        return None
 
     # Process the command entered by the player
     def process_command(self, command_string) -> None:

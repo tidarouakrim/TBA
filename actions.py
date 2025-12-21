@@ -79,9 +79,18 @@ class Actions:
             print(player.current_room.get_long_description())
             return False
 
-        # Move the player in the direction specified by the parameter.
-        player.move(direction)
-        return True
+        moved = game.player.move(direction)
+
+        if moved:
+            
+            all_characters = set()
+            for room in game.rooms:
+                all_characters.update(room.characters.values())
+
+            for character in list(all_characters):
+                character.move()
+        return moved
+
 
     def quit(game, list_of_words, number_of_parameters):
         """
@@ -172,7 +181,16 @@ class Actions:
             print(MSG0.format(command_word=command_word))
             return False
 
-        return game.player.back()
+        moved = game.player.back()
+
+        if moved:
+            all_characters = set()
+            for room in game.rooms:
+                all_characters.update(room.characters.values())
+
+            for character in list(all_characters):
+                character.move()
+        return moved
     
     def look(game, list_of_words, number_of_parameters):
         if len(list_of_words) != number_of_parameters + 1:
@@ -286,3 +304,24 @@ class Actions:
         game.player.current_room = beamer.charged_room
         print(f" Téléportation vers : {beamer.charged_room.name}")
         return True
+    
+
+    def talk(game, list_of_words, number_of_parameters):
+
+        if len(list_of_words) != number_of_parameters + 1:
+            print(f"Usage : talk <someone>")
+            return False
+
+        pnj_name = list_of_words[1]
+        room = game.player.current_room
+
+        # Vérifie si le PNJ est dans la pièce
+        if pnj_name not in room.characters:
+            print(f"{pnj_name} n'est pas ici.")
+            return False
+
+        # Fait parler le PNJ
+        pnj_name = room.characters[pnj_name]
+        pnj_name.get_msg()
+        return True
+
