@@ -1,14 +1,17 @@
 # Description: Game class
+DEBUG = True
 
-#
 from room import Room
 from player import Player
 from command import Command
 from actions import Actions
 from item import Item
+from character import Character
+from item import Beamer
+from quest import QuestManager, create_first_quest
 
 class Game:
-
+    
     # Constructor Import modules
 
     def __init__(self):
@@ -41,7 +44,16 @@ class Game:
         self.commands["drop"] = drop
         check = Command("check", " <item> : vérifier son inventaire", Actions.check, 1)
         self.commands["check"] = check
-        
+        beamer_charge = Command("beamer_charge", " : charger le beamer", Actions.beamer_charge, 0)
+        self.commands["beamer_charge"] = beamer_charge
+        beamer_teleportation = Command("beamer_teleportation", " : utiliser le beamer pour retourner à l'endroit chargé", Actions.beamer_teleportation, 0)
+        self.commands["beamer_teleportation"] = beamer_teleportation
+        talk = Command("talk", " <someone> : parler à quelqu'un", Actions.talk, 1)
+        self.commands["talk"] = talk
+        use = Command("use", " <item> <cible> : utiliser un objet sur quelque chose", Actions.use_item, 2)
+        self.commands["use"] = use
+
+
         # Setup rooms
         gare = Room("gare", " la gare de départ de l’Orient Express, entouré de voyageurs élégants et de valises en cuir.")
         self.rooms.append(gare)
@@ -68,7 +80,7 @@ class Game:
         espace_bagage.exits = {"N" : None, "E" : None, "S" : None, "O" : None, "U" : bureau_du_maitre_du_Jeu, "D" : None}
         bureau_du_maitre_du_Jeu.exits = {"N" : locomotive, "E" : None, "S" : None, "O" : None, "U" : None, "D" : espace_bagage}
         locomotive.exits = {"N" : None, "E" : None, "S" : None, "O" : None,"U" : None, "D" : None}
-        
+        quit
         # Ajouter des items à wagon_1_classe
         coffre = Item("coffre", "Un coffre ancien et verrouillé", 5)
         tapis = Item("tapis", "Un tapis fin et coloré", 1)
@@ -76,6 +88,7 @@ class Game:
         livre = Item("livre", "Un livre ouvert sur un siège", 1)
         cle = Item("clé", "Une clé cachée sous un coussin", 0.1)
         note = Item("note", "Une petite note mystérieuse", 0.05)
+        Madame_Loisel = Character("MadameLoisel", "Une dame élégante.", piece1, ["Avez-vous vu mon collier perdu?"])
     
         # Ajouter des items à wagon_restaurant
         ragout= Item("ragoût", "Un ragoût de bœuf fumant et appétissant", 1.2)
@@ -87,7 +100,7 @@ class Game:
         serviette = Item("serviette", "Une serviette en tissu blanc", 0.1)
         livre_recettes = Item("livre", "Un livre détaillant diverses recettes", 0.7)
         sel = Item("sel", "Un sel de table", 0.2)  # objet crucial
-      
+        Gouteur = Character("Gouteur", "Un personnage qui goûte les plats.", restaurant, ["Attention il ne faut pas m'empoisonner!"])
 
         # Ajouter des items à wagon_bibliothèque
         livre1 = Item("livre1", "titre", 1)
@@ -97,11 +110,17 @@ class Game:
         livre5 = Item("livre5", "titre", 1)
         livre6 = Item("livre6", "titre", 1)
         beamer= Item("beamer", "Un appareil qui permet de mémoriser des lieux.", 1)
+        Bibliothécaire = Character("Bibliothécaire", "Un personnage qui garde les livres.", bibliotheque, ["Chut! Ici c'est une bibliothèque."])
         
         # Ajouter des items à wagon_bagagiste
         montre = Item("montre", "descrip", 1)
         parapluie = Item("parapluie", "descrip", 1)
         lettre = Item("lettre", "descrip", 1)
+        Paul = Character("Paul", "Voyageur", espace_bagage, ["Je ne pars jamais sans vérifier l’heure, surtout quand le train s’arrête."])
+        Claire = Character("Claire", "Voyageuse", espace_bagage, ["J’aime que mes affaires restent sèches."])
+        Henri = Character("Henri", "Voyageur", espace_bagage, ["Je n’oublie jamais mes messages, ils contiennent des secrets importants."])
+
+        Controleur = Character("Contrôleur", "Le maître du jeu.", bureau_du_maitre_du_Jeu, ["La mémoire est quelque chose de très important dans ce train."])
         
 
 
@@ -111,6 +130,7 @@ class Game:
         piece1.inventory[livre.name] = livre
         piece1.inventory[cle.name] = cle
         piece1.inventory[note.name] = note
+        piece1.characters[Madame_Loisel.name] = Madame_Loisel
 
         restaurant.inventory[fourchette.name] = fourchette
         restaurant.inventory[couteau.name] = couteau
@@ -121,7 +141,9 @@ class Game:
         restaurant.inventory[ragout.name] = ragout
         restaurant.inventory[salade.name] = salade
         restaurant.inventory[gratin.name] = gratin
+        restaurant.characters[Gouteur.name] = Gouteur
 
+        beamer = Beamer()
         bibliotheque.inventory[livre1.name] = livre1
         bibliotheque.inventory[livre2.name] = livre2
         bibliotheque.inventory[livre3.name] = livre3
@@ -129,10 +151,17 @@ class Game:
         bibliotheque.inventory[livre5.name] = livre5
         bibliotheque.inventory[livre6.name] = livre6
         bibliotheque.inventory[beamer.name] = beamer
+        bibliotheque.characters[Bibliothécaire.name] = Bibliothécaire
+
 
         espace_bagage.inventory[montre.name] = montre
         espace_bagage.inventory[parapluie.name] = parapluie
         espace_bagage.inventory[lettre.name] = lettre
+        espace_bagage.characters[Paul.name] = Paul
+        espace_bagage.characters[Claire.name] = Claire
+        espace_bagage.characters[Henri.name] = Henri
+
+        bureau_du_maitre_du_Jeu.characters[Controleur.name] = Controleur
 
         # Renseigner toutes les directions utilisées 
         for room in self.rooms:
@@ -143,10 +172,33 @@ class Game:
         self.player = Player(input("\nEntrez votre nom: "))
         self.player.current_room = gare
 
+        self.quest_manager = QuestManager(self.player)
+        quest1 = create_first_quest()
+        self.quest_manager.add_quest(quest1)
+
+        # Renseigner toutes les directions utilisées
+        for room in self.rooms:
+            self.direction.update(room.exits.keys())
+
     # Play the game
     def play(self):
         self.setup()
         self.print_welcome()
+        quest1_message_shown = False  # 
+        while not self.finished:
+            command_input = input("> ")
+            self.process_command(command_input)
+
+            
+            if self.player.current_room.name == "piece1":
+                try:
+                    self.quest_manager.activate_quest("Quête 1")
+                    if not quest1_message_shown:
+                        print(" Quête 1 activée : Trouvez la parure de Madame Loisel !")
+                        quest1_message_shown = True
+                except Exception:
+                    pass
+
         # Loop until the game is finished
         while not self.finished:
             # Get the command from the player
@@ -190,3 +242,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

@@ -70,7 +70,7 @@ class Actions:
              print(player.current_room.get_long_description())
              return False
 
-        # Utiliser la lettre standard pour accéder aux exits
+        
         direction = direction_map[input_direction]
 
         # Vérifier que c'est une direction valide
@@ -79,9 +79,18 @@ class Actions:
             print(player.current_room.get_long_description())
             return False
 
-        # Move the player in the direction specified by the parameter.
-        player.move(direction)
-        return True
+        moved = game.player.move(direction)
+
+        if moved:
+            
+            all_characters = set()
+            for room in game.rooms:
+                all_characters.update(room.characters.values())
+
+            for character in list(all_characters):
+                character.move()
+        return moved
+
 
     def quit(game, list_of_words, number_of_parameters):
         """
@@ -172,7 +181,16 @@ class Actions:
             print(MSG0.format(command_word=command_word))
             return False
 
-        return game.player.back()
+        moved = game.player.back()
+
+        if moved:
+            all_characters = set()
+            for room in game.rooms:
+                all_characters.update(room.characters.values())
+
+            for character in list(all_characters):
+                character.move()
+        return moved
     
     def look(game, list_of_words, number_of_parameters):
         if len(list_of_words) != number_of_parameters + 1:
@@ -266,15 +284,61 @@ class Actions:
 
     # enregistrer la room actuelle
         beamer.charged_room = game.player.current_room
-        print(f" Le beamer a mémorisé cette pièce : {game.player.current_room.name}")
+        print(f" Le beamer a mémorisé : {beamer.charged_room.name}")
+        return True
+    
+    def beamer_teleportation(game, list_of_words, number_of_parameters):
+        # vérifie si joueur possède le beamer
+        if "beamer" not in game.player.inventory:
+            print("Vous n'avez pas le beamer sur vous.")
+            return False
 
-        # vérifier qu'il est chargé
+        beamer = game.player.inventory["beamer"]
+
+        # vérifier si le beamer est chargé
         if beamer.charged_room is None:
             print("Le beamer n'est pas chargé.")
             return False
-       
-    # téléporter
-        print(f" Le beamer s’active... Vous êtes téléporté dans : {beamer.charged_room.name}")
-        game.player.current_room = beamer.charged_room
 
+        # téléporter le joueur
+        game.player.current_room = beamer.charged_room
+        print(f" Téléportation vers : {beamer.charged_room.name}")
         return True
+    
+
+    def talk(game, list_of_words, number_of_parameters):
+
+        if len(list_of_words) != number_of_parameters + 1:
+            print(f"Usage : talk <someone>")
+            return False
+
+        pnj_name = list_of_words[1]
+        room = game.player.current_room
+
+        # Vérifie si le PNJ est dans la pièce
+        if pnj_name not in room.characters:
+            print(f"{pnj_name} n'est pas ici.")
+            return False
+
+        # Fait parler le PNJ
+        pnj_name = room.characters[pnj_name]
+        pnj_name.get_msg()
+        return True
+    def use_item(game, args, num_params):
+        if len(args) != 3:
+            print(MSG1.format(command_word=args[0]))
+            return False
+        item_name = args[1]
+        target_name = args[2]
+        room = game.player.current_room
+        if item_name == "clé" and target_name == "coffre":
+            if "coffre" in room.inventory:
+                print("✅ Vous ouvrez le coffre et découvrez la parure de Madame Loisel !")
+                # Si tu veux activer la quête ici, tu peux ajouter :
+                # game.quest_manager.complete_objective("Utiliser la clé sur le coffre")
+                return True
+            else:
+                print("Il n'y a pas de coffre ici.")
+                return False
+        print(f"Vous ne pouvez pas utiliser {item_name} sur {target_name}.")
+        return False
