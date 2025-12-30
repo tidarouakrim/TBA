@@ -70,7 +70,7 @@ class Actions:
              print(player.current_room.get_long_description())
              return False
 
-        # Utiliser la lettre standard pour accéder aux exits
+        
         direction = direction_map[input_direction]
 
         # Vérifier que c'est une direction valide
@@ -324,4 +324,3 @@ class Actions:
         pnj_name = room.characters[pnj_name]
         pnj_name.get_msg()
         return True
-
