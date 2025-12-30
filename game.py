@@ -9,6 +9,7 @@ from item import Item
 from character import Character
 from item import Beamer
 from quest import QuestManager, create_first_quest
+from quest import Quest
 
 class Game:
     

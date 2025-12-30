@@ -99,16 +99,16 @@ class QuestManager:
 
 
 # --- Création de la première quête ---
-def create_first_quest():
-    title = "Quête 1"
-    description = (
-        "Vous êtes dans le niveau bas du wagon de première classe.\n"
-        "Madame Loisel a perdu sa parure.\n"
-        "Objectif : utiliser la clé sur le coffre pour la retrouver."
-    )
-    objectives = [
-        "utiliser clé sur coffre"
-    ]
-    reward = "Parure de Madame Loisel récupérée"
+    def create_first_quest():
+        title = "Quête 1"
+        description = (
+            "Vous êtes dans le niveau bas du wagon de première classe.\n"
+            "Madame Loisel a perdu sa parure.\n"
+            "Objectif : utiliser la clé sur le coffre pour la retrouver."
+        )
+        objectives = [
+            "utiliser clé sur coffre"
+        ]
+        reward = "Parure de Madame Loisel récupérée"
 
-    return Quest(title, description, objectives, reward)
+        return Quest(title, description, objectives, reward)

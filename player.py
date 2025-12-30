@@ -42,6 +42,20 @@ class Player():
         self.current_room = next_room
         print(self.current_room.get_long_description())
         print(self.get_history())
+         # Détecter la pièce spéciale pour lancer la quête
+        if self.current_room.name == "Restaurant":
+            # Activer la quête si elle n'est pas déjà active
+            self.quest_manager.activate_quest("Le repas empoisonné")
+            print("🔔 Quête 'Le repas empoisonné' activée !")
+
+
+        # Vérifier si visiter cette pièce complète un objectif
+        self.quest_manager.check_room_objectives(self.current_room.name)
+
+        # Compteur de mouvements
+        self.move_count += 1
+        self.quest_manager.check_counter_objectives("Se déplacer", self.move_count)
+
         return True
 
     def get_history(self):
@@ -89,3 +103,59 @@ class Player():
     
     def current_weight(self):
         return sum(item.weight for item in self.inventory.values())
+    
+
+
+    def add_reward(self, reward):
+        """
+        Add a reward to the player's rewards list.
+        
+        Args:
+            reward (str): The reward to add.
+            
+        Examples:
+        
+        >>> player = Player("Bob")
+        >>> player.add_reward("Épée magique") # doctest: +NORMALIZE_WHITESPACE
+        <BLANKLINE>
+        🎁 Vous avez obtenu: Épée magique
+        <BLANKLINE>
+        >>> "Épée magique" in player.rewards
+        True
+        >>> player.add_reward("Épée magique") # Adding same reward again
+        >>> len(player.rewards)
+        1
+        """
+        if reward and reward not in self.rewards:
+            self.rewards.append(reward)
+            print(f"\n🎁 Vous avez obtenu: {reward}\n")
+
+
+    def show_rewards(self):
+        """
+        Display all rewards earned by the player.
+        
+        Examples:
+        
+        >>> player = Player("Charlie")
+        >>> player.show_rewards() # doctest: +NORMALIZE_WHITESPACE
+        <BLANKLINE>
+        🎁 Aucune récompense obtenue pour le moment.
+        <BLANKLINE>
+        >>> player.add_reward("Bouclier d'or") # doctest: +NORMALIZE_WHITESPACE
+        <BLANKLINE>
+        🎁 Vous avez obtenu: Bouclier d'or
+        <BLANKLINE>
+        >>> player.show_rewards() # doctest: +NORMALIZE_WHITESPACE
+        <BLANKLINE>
+        🎁 Vos récompenses:
+        • Bouclier d'or
+        <BLANKLINE>
+        """
+        if not self.rewards:
+            print("\n🎁 Aucune récompense obtenue pour le moment.\n")
+        else:
+            print("\n🎁 Vos récompenses:")
+            for reward in self.rewards:
+                print(f"  • {reward}")
+            print()
