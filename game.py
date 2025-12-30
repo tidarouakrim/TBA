@@ -8,6 +8,7 @@ from actions import Actions
 from item import Item
 from character import Character
 from item import Beamer
+from quest import QuestManager, create_first_quest
 
 class Game:
     
@@ -167,6 +168,14 @@ class Game:
 
         self.player = Player(input("\nEntrez votre nom: "))
         self.player.current_room = gare
+
+        self.quest_manager = QuestManager(self.player)
+        quest1 = create_first_quest()
+        self.quest_manager.add_quest(quest1)
+
+        # Renseigner toutes les directions utilisées
+        for room in self.rooms:
+            self.direction.update(room.exits.keys())
 
     # Play the game
     def play(self):
