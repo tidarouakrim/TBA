@@ -1,4 +1,6 @@
 # Define the Player class.
+from quest import QuestManager
+
 class Player():
     """
     This class represents a player in a adventure game
@@ -18,6 +20,7 @@ class Player():
     none
  
     """
+
     # Define the constructor.
     def __init__(self, name, max_weight=6):
         self.name = name
@@ -25,6 +28,13 @@ class Player():
         self.history = []
         self.inventory = {}
         self.max_weight = max_weight
+        self.quest_manager = QuestManager(self)  
+        self.rewards = []
+        self.move_count = 0
+        self.poisoned_plate = None 
+
+
+
         
     # Define the move method.
     def move(self, direction):
@@ -42,19 +52,21 @@ class Player():
         self.current_room = next_room
         print(self.current_room.get_long_description())
         print(self.get_history())
+        # Compteur de mouvements
+        self.move_count += 1
+        self.quest_manager.check_action_objectives("Se déplacer", self.move_count)
+
          # Détecter la pièce spéciale pour lancer la quête
-        if self.current_room.name == "Restaurant":
+        if self.current_room.name == "piece1":
+            # Activer la quête si elle n'est pas déjà active
+            self.quest_manager.activate_quest("Trouver la parure de Madame Loisel")
+            print("🔔 Quête 'Trouver la parure de Madame Loisel' activée !")
+        if self.current_room.name == "restaurant":
             # Activer la quête si elle n'est pas déjà active
             self.quest_manager.activate_quest("Le repas empoisonné")
             print("🔔 Quête 'Le repas empoisonné' activée !")
 
-
-        # Vérifier si visiter cette pièce complète un objectif
-        self.quest_manager.check_room_objectives(self.current_room.name)
-
-        # Compteur de mouvements
-        self.move_count += 1
-        self.quest_manager.check_counter_objectives("Se déplacer", self.move_count)
+            self.poisoned_plate = "salade"
 
         return True
 

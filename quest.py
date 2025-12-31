@@ -1,3 +1,4 @@
+from item import Item
 """ Define the Quest class"""
 
 class Quest:
@@ -13,6 +14,8 @@ class Quest:
         self.is_completed = False
         self.is_active = False
         self.reward = reward
+        self.secret_word = ""
+        self.secret_letters = []
         
     def activate(self):
         self.is_active = True
@@ -61,6 +64,31 @@ class Quest:
         for objective in objective_variations:
             if self.complete_objective(objective, player):
                 return True
+            
+            
+    def find_letters_in_books(self, player):
+        """Cherche les lettres majuscules dans les livres et forme le mot secret"""
+        for item_name, item in player.current_room.inventory.items():
+            letter = item.check_for_uppercase()
+            if letter and letter not in self.secret_letters:
+                self.secret_letters.append(letter)
+                print(f"Lettre {letter} enregistrée")
+
+        if len(self.secret_letters) == len(self.objectives):
+            print("Toutes les lettres ont été enregistrées. Veuillez former le mot final.")
+            self.complete_objective("Trouver le mot secret")
+            print("Mot secret collecté: " + "".join(self.secret_letters))
+
+    
+    def check_final_word(self, guessed_word):
+        """Vérifie si le mot secret proposé est correct"""
+        if ''.join(self.secret_letters) == guessed_word:
+            print("Félicitations, vous avez trouvé le mot secret!")
+            return True
+        else:
+            print("Ce n'est pas le bon mot secret. Essayez encore.")
+            return False
+
 
 
 class QuestManager:
@@ -71,6 +99,7 @@ class QuestManager:
         self.quests = []
         self.active_quests = []
         self.player = player
+        self.secret_word = ""
 
     def add_quest(self, quest):
         self.quests.append(quest)
@@ -98,17 +127,35 @@ class QuestManager:
                 self.active_quests.remove(quest)
 
 
-# --- Création de la première quête ---
-    def create_first_quest():
-        title = "Quête 1"
-        description = (
-            "Vous êtes dans le niveau bas du wagon de première classe.\n"
-            "Madame Loisel a perdu sa parure.\n"
-            "Objectif : utiliser la clé sur le coffre pour la retrouver."
-        )
-        objectives = [
-            "utiliser clé sur coffre"
-        ]
-        reward = "Parure de Madame Loisel récupérée"
+    def find_letters_in_books(self, player):
+        """Cherche les lettres majuscules dans tous les livres et forme le mot secret"""
+        for item_name, item in player.current_room.inventory.items():
+                letter = item.check_for_uppercase()  # Vérifie si une majuscule est présente
+                if letter:
+                    print(f"Lettre {letter} enregistrée.")
+                    self.secret_word += letter  # Ajout de la lettre au mot secret
 
-        return Quest(title, description, objectives, reward)
+        # Une fois que toutes les lettres sont enregistrées, afficher le message
+        if len(self.secret_word) == 5:  # Par exemple, 5 lettres doivent être collectées
+            print("Toutes les lettres ont été enregistrées. Veuillez former le mot final.")
+            self.complete_objective("Trouver le mot secret")
+
+    def check_final_word(self, guessed_word):
+        """Vérifie si le mot secret proposé est correct"""
+        if guessed_word.lower() == "BRAVO":
+            print("✅ Félicitations ! Vous avez trouvé le mot secret !")
+            return True
+        else:
+            print("❌ Le mot secret est incorrect. Essayez à nouveau.")
+            return False
+        
+    def guess_word(game, args, num_params):
+        """Permet au joueur de deviner le mot secret."""
+        if len(args) != 2:
+            print("❌ Syntaxe incorrecte : utilisez 'guess <mot>'")
+            return False
+
+        guessed_word = args[1].upper()
+        game.player.quest_manager.check_final_word(guessed_word)
+        return True
+

@@ -520,32 +520,78 @@ class Actions:
         return True
 
     @staticmethod
-    def use(game, list_of_words, number_of_parameters):
+    def use(game, args, num_params):
         """
-        Permet d'utiliser un objet sur un plat.
-        Exemple: utiliser sel ragoût
+        Utiliser un objet sur une cible ou un plat.
+        Syntaxe : use <objet> <cible/plat>
         """
-        if len(list_of_words) < 3:
-            print("\nLa commande 'utiliser' prend 2 paramètres.\n")
+        if len(args) < 3:
+            print(f"❌ Syntaxe incorrecte : {args[0]} <objet> <cible>")
             return False
 
-        objet = list_of_words[1].lower()
-        plat = " ".join(list_of_words[2:]).lower()
+        item_name = args[1].lower()
+        target_name = " ".join(args[2:]).lower()
+        room = game.player.current_room
 
-        # Vérifier que c'est le sel
-        if objet != "sel":
-            print(f"\nL'objet {objet} n'a aucun effet sur {plat}.\n")
+        # Cas 1 : Clé sur coffre
+        if item_name == "clé" and target_name == "coffre":
+            if "coffre" in room.inventory:
+                print("✅ Vous ouvrez le coffre et découvrez la parure de Madame Loisel !")
+                game.player.quest_manager.check_action_objectives("utiliser clé sur coffre")
+                return True
+            else:
+                print("❌ Il n'y a pas de coffre ici.")
+                return False
+
+        # Cas 2 : Sel sur plat
+        if item_name == "sel":
+            if target_name == game.player.poisoned_plate:
+                print(f"\nLe {target_name} change légèrement de couleur ! C’est le plat empoisonné.\n")
+                game.player.quest_manager.complete_objective("Saupoudrer le sel sur le plat empoisonné")
+                game.player.quest_manager.complete_objective("Identifier le plat empoisonné")
+            else:
+                print(f"\nLe {target_name} ne réagit pas au sel.\n")
+            return True
+        
+        # Cas 3 : Chercher une lettre majuscule dans les livres de la bibliothèque
+
+        if "livre" in item_name and "bibliotheque" in target_name:
+            book = room.inventory.get(item_name)
+            if book:
+                letter = book.check_for_uppercase()
+                if letter:
+                    print(f"Lettre {letter} enregistrée.")
+                    game.player.quest_manager.secret_word += letter  # Ajout de la lettre au mot secret
+                    if len(game.player.quest_manager.secret_word) == len(game.player.quest_manager.secret_word):
+                        print("Toutes les lettres ont été collectées !Veuillez entrer le mot secret.")  # Par exemple, 5 lettres doivent être collectées
+                else:
+                    print("Aucune lettre trouvée dans ce livre.")
+            else:
+                print(f"Le livre '{item_name}' n'est pas dans cette pièce.")
+            return True
+
+        # Cas général : utilisation non permise
+        print(f"❌ Vous ne pouvez pas utiliser {item_name} sur {target_name}.")
+        return False
+
+
+    @staticmethod
+    def check_secret_word(game, args, num_params):
+        """Permet de vérifier si le mot secret proposé est correct."""
+        if len(args) != 2:
+            print(f"❌ Syntaxe incorrecte : {args[0]} <mot_secret>")
             return False
 
-        # Vérifier si le plat est le plat empoisonné
-        if plat == game.player.poisoned_plate:
-            print(f"\nLe {plat} change légèrement de couleur ! C’est le plat empoisonné.\n")
-            game.player.quest_manager.complete_objective("Saupoudrer le sel sur le plat empoisonné")
-            game.player.quest_manager.complete_objective("Identifier le plat empoisonné")
-        else:
-            print(f"\nLe {plat} ne réagit pas au sel.\n")
+        guessed_word = args[1]
 
-        return True
+        # Vérifie le mot secret dans la quête active
+        for quest in game.player.quest_manager.active_quests:
+            if quest.title == "Quête 4" and quest.is_active:
+                return quest.check_final_word(guessed_word)
+
+        print("❌ Aucun mot secret à deviner.")
+        return False
+
         
     def give(game, list_of_words, number_of_parameters):
         """
@@ -559,9 +605,10 @@ class Actions:
         plat = " ".join(list_of_words[1:]).lower()
 
         if plat == game.player.poisoned_plate:
-            print("\nLe PNJ goûte le plat empoisonné et tombe malade ! La quête échoue.\n")
+            print("\nLe PNJ goûte le plat empoisonné et meurt ! La quête échoue.\n")
         else:
             print("\nLe PNJ goûte le plat sûr et vous complétez la quête !\n")
             game.player.quest_manager.complete_objective("Donner le plat sûr au PNJ")
 
         return True
+   

@@ -11,6 +11,16 @@ class Item:
         self.name = name
         self.description = description
         self.weight = weight
+        self.letter = None  # Cette lettre va contenir la lettre majuscule trouvée
+
+    def check_for_uppercase(self):
+        """Vérifie si le titre contient une lettre majuscule"""
+        self.letter = next((char for char in self.name if char.isupper()), None)  # Trouve la première lettre majuscule
+        if self.letter:
+            return self.letter
+        return None  # Si aucune lettre majuscule n'est trouvée, retourner None
+
+        
 
     def __str__(self):
         """

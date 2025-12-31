@@ -8,8 +8,7 @@ from actions import Actions
 from item import Item
 from character import Character
 from item import Beamer
-from quest import QuestManager, create_first_quest
-from quest import Quest
+from quest import QuestManager, Quest
 
 class Game:
     
@@ -51,6 +50,11 @@ class Game:
         self.commands["beamer_teleportation"] = beamer_teleportation
         talk = Command("talk", " <someone> : parler à quelqu'un", Actions.talk, 1)
         self.commands["talk"] = talk
+        use = Command("use", " <item> [on <target>] : utiliser un objet, éventuellement sur une cible", Actions.use, -1)
+        self.commands["use"] = use
+        give = Command("give", " <item> to <someone> : donner un objet à quelqu'un", Actions.give, -1)
+        self.commands["give"] = give
+    
 
         # Setup rooms
         gare = Room("gare", " la gare de départ de l’Orient Express, entouré de voyageurs élégants et de valises en cuir.")
@@ -101,12 +105,12 @@ class Game:
         Gouteur = Character("Gouteur", "Un personnage qui goûte les plats.", restaurant, ["Attention il ne faut pas m'empoisonner!"])
 
         # Ajouter des items à wagon_bibliothèque
-        livre1 = Item("livre1", "titre", 1)
-        livre2 = Item("livre2", "titre", 1)
-        livre3 = Item("livre3", "titre", 1)
-        livre4 = Item("livre4", "titre", 1)
-        livre5 = Item("livre5", "titre", 1)
-        livre6 = Item("livre6", "titre", 1)
+        livre1 = Item("livre1", "spleen1", 1)
+        livre2 = Item("livre2", "les misérAbles", 1)
+        livre3 = Item("livre3", "madame boVary", 1)
+        livre4 = Item("livre4", "le Rouge et le nOir", 1)
+        livre5 = Item("livre5", "l'omBre du vent", 1)
+        livre6 = Item("livre6", "power", 1)
         beamer= Item("beamer", "Un appareil qui permet de mémoriser des lieux.", 1)
         Bibliothécaire = Character("Bibliothécaire", "Un personnage qui garde les livres.", bibliotheque, ["Chut! Ici c'est une bibliothèque."])
         
@@ -161,6 +165,8 @@ class Game:
 
         bureau_du_maitre_du_Jeu.characters[Controleur.name] = Controleur
 
+       
+
         # Renseigner toutes les directions utilisées 
         for room in self.rooms:
             self.direction.update(room.exits.keys())
@@ -169,48 +175,66 @@ class Game:
 
         self.player = Player(input("\nEntrez votre nom: "))
         self.player.current_room = gare
+        self._setup_quests()
+        quest1 = Quest(
+            title = "Quête 1",
+            description = (
+                "Vous êtes dans le niveau bas du wagon de première classe.\n"
+                "Madame Loisel a perdu sa parure.\n"
+                "Objectif : utiliser la clé sur le coffre pour la retrouver."
+            ),
+            objectives = [
+                "utiliser clé sur coffre"
+            ],
+            reward = "Parure de Madame Loisel récupérée")
+        self.player.quest_manager.add_quest(quest1)
 
-        self.quest_manager = QuestManager(self.player)
-        quest1 = create_first_quest()
-        self.quest_manager.add_quest(quest1)
 
         # Renseigner toutes les directions utilisées
         for room in self.rooms:
             self.direction.update(room.exits.keys())
+            
+
 
     def _setup_quests(self):
         """Initialize all quests."""
-        exploration_quest = Quest(
-            title="Grand Explorateur",
-            description="Explorez tous les lieux de ce monde mystérieux.",
-            objectives=["Visiter Forest"
-                        , "Visiter Tower"
-                        , "Visiter Cave"
-                        , "Visiter Cottage"
-                        , "Visiter Castle"],
-            reward="Titre de Grand Explorateur"
+        parure_quest = Quest(
+            title="Quête 1",
+            description=(
+                "Vous êtes dans le niveau bas du wagon de première classe.\n"
+                "Madame Loisel a perdu sa parure.\n"
+                "Objectif : utiliser la clé sur le coffre pour la retrouver."
+            ),
+            objectives=["utiliser clé sur coffre"],
+            reward="Parure de Madame Loisel récupérée"
         )
 
-        travel_quest = Quest(
-            title="Grand Voyageur",
-            description="Déplacez-vous 10 fois entre les lieux.",
-            objectives=["Se déplacer 10 fois"],
-            reward="Bottes de voyageur"
+
+        restaurant_quest = Quest(
+            title="Quête 2",
+            description=(
+                "Vous êtes dans le niveau haut du wagon, dans le restaurant.\n"
+                "le repas est empoisonné.\n"
+                "Objectif : trouver quel repas est empoisonné."
+            ),
+            objectives=["utiliser le sel"],
+            reward="repas sain et sauf"
         )
 
-        discovery_quest = Quest(
-            title="Découvreur de Secrets",
-            description="Découvrez les trois lieux les plus mystérieux.",
-            objectives=["Visiter Cave"
-                        , "Visiter Tower"
-                        , "Visiter Castle"],
-            reward="Clé dorée"
+        livre_quest = Quest(
+            title="Quête 4",
+            description=(
+                "Vous êtes dans le niveau haut du deuxieme wagon, dans la bibliothèque.\n"
+            ),
+            objectives=["trouver le mot secret"],
+            reward="Expert des livres"
         )
+        
 
         # Add quests to player's quest manager
-        self.player.quest_manager.add_quest(exploration_quest)
-        self.player.quest_manager.add_quest(travel_quest)
-        self.player.quest_manager.add_quest(discovery_quest)
+        self.player.quest_manager.add_quest(parure_quest)
+        self.player.quest_manager.add_quest(restaurant_quest)
+        self.player.quest_manager.add_quest(livre_quest)
 
     # Play the game
     def play(self):
@@ -251,7 +275,8 @@ class Game:
         print("Entrez 'help' si vous avez besoin d'aide.")
         #
         print(self.player.current_room.get_long_description())
-    
+
+
 
 def main():
     # Create a game object and play the game
