@@ -24,10 +24,11 @@ class Character:
     def move(self):
         from game import DEBUG
 
-        if self.name == "Gouteur":
+        if self.name in ["Gouteur", "Contrôleur"]:
             if DEBUG:
                 print(f"DEBUG: {self.name} reste dans {self.current_room.name}.")
-                return False
+            return False
+            
         # 1 chance sur 2 de ne pas bouger
         if random.choice([True, False]) is False:
             if DEBUG:

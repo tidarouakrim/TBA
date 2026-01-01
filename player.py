@@ -34,6 +34,9 @@ class Player():
         self.poisoned_plate = None 
         self.found_letters = []
         self.waiting_for_secret_word = False
+        self.final_interrogation_step = 0
+        self.waiting_for_final_questions = False
+
 
 
 
@@ -77,6 +80,10 @@ class Player():
             self.quest_manager.activate_quest("Mot secret")
             print("🔔 Quête 'Mot secret' activée !")
 
+        # Après avoir affiché la description de la pièce
+        if self.current_room.name == "bureau_du_Maitre_du_jeu" and not self.waiting_for_final_questions:
+            self.waiting_for_final_questions = True
+            self.ask_final_questions()
 
         return True
 
@@ -110,6 +117,35 @@ class Player():
         print(self.get_history())
 
         return True
+    
+    def ask_final_questions(self):
+        """
+        Interroge le joueur sur les objets et événements des wagons précédents.
+        Chaque question doit être répondue correctement pour passer à la suivante.
+        """
+    # Liste des questions et réponses
+        final_questions = [
+            ("Où était la clé ?", "coussin"),
+            ("Quel était le repas contaminé ?", "salade"),
+            ("Quel était l'objet de Claire ?", "parapluie"),
+            ("Quel est le mot secret de la bibliothèque ?", "BRAVO")  # majuscules si tu veux
+        ]
+        print("\nLe contrôleur vous observe attentivement...")
+    
+        for question, correct_answer in final_questions:
+            answered = False
+            while not answered:
+                response = input(f"\nLe contrôleur demande : {question}\n> ").strip()
+            # Vérification insensible à la casse
+                if response.lower() == correct_answer.lower():
+                    print("✅ Bonne réponse !")
+                    answered = True
+                else:
+                    print("❌ Mauvaise réponse, essayez encore.")
+
+        print("\n🎉 Toutes les réponses sont correctes ! Vous avez validé la mission et arrivez enfin à destination !")
+        self.quest_manager.complete_objective("utiliser votre mémoire ou le beamer")  # valide la quête finale
+
     
     def get_inventory(self):
         """

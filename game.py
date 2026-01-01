@@ -56,6 +56,9 @@ class Game:
         self.commands["give"] = give
         mot_command = Command("mot", "<le_mot> : entrer le mot secret", Actions.check_secret_word, -1)
         self.commands["mot"] = mot_command
+        repondre_cmd = Command("repondre", "<réponse>", Actions.repondre, -1)
+        self.commands["repondre"] = repondre_cmd
+
     
     
 
@@ -68,7 +71,7 @@ class Game:
         self.rooms.append(restaurant)
         dortoir = Room("dortoir", " le niveau bas du deuxième wagon, dans le dortoir de luxe, où les somptueux lits forment un véritable labyrinthe.")
         self.rooms.append(dortoir)
-        bibliotheque = Room("bibliothèque", " le niveau haut du deuxième wagon dans la bibliothèque silencieuse, remplie de livres anciens.")
+        bibliotheque = Room("bibliotheque", " le niveau haut du deuxième wagon dans la bibliothèque silencieuse, remplie de livres anciens.")
         self.rooms.append(bibliotheque)
         espace_bagage = Room("espace_bagage", " le niveau bas du troisième wagon dans l'espace bagage, où valises et coffres s’entassent et quelques affaires traînent sur le sol.")
         self.rooms.append(espace_bagage)
@@ -224,15 +227,47 @@ class Game:
             reward="repas sain et sauf"
         )
 
+        labyrinthe_quest = Quest(
+            title="Quête 3",
+            description=(
+                "Vous êtes dans le niveau bas du deuxieme wagon, dans le dortoir.\n"
+                "Objectif : trouver la sortie."
+            ),
+            objectives=["utiliser les directions"],
+            reward="Expert en sens de l'orientation"
+        )
+
         livre_quest = Quest(
             title="Quête 4",
-            description="Trouver les lettres cachées dans les livres.",
+            description="Vous êtes dans le niveau haut du deuxieme wagon, dans la bibliotheque.\n"
+            "Trouver les lettres cachées dans les livres.",
             objectives=[
                 "trouver les lettres",
                 "trouver le mot secret"
             ],
             reward="Expert des livres"
       )
+        
+        valise_quest = Quest(
+            title="Quête 5",
+            description=(
+                "Vous êtes dans le niveau bas du troisième wagon, dans l'espace bagage.\n"
+                "les affaires sont eparpillées.\n"
+                "Objectif : trouver les affaires de chque personnages."
+            ),
+            objectives=["utiliser les indices"],
+            reward="Expert rangement "
+        )
+
+        memoire_quest = Quest(
+            title="Quête 6",
+            description=(
+                "Vous êtes dans le niveau haut du troisième wagon, dans le bureau du maitre du jeu.\n"
+                "Objectif : répondre correctement a toutes les questions."
+            ),
+            objectives=["utiliser votre mémoire ou le beamer"],
+            reward="Arrive à destination"
+        )
 
         
 
@@ -240,6 +275,7 @@ class Game:
         self.player.quest_manager.add_quest(parure_quest)
         self.player.quest_manager.add_quest(restaurant_quest)
         self.player.quest_manager.add_quest(livre_quest)
+        self.player.quest_manager.add_quest(memoire_quest)
 
     # Play the game
     def play(self):
