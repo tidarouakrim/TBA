@@ -54,6 +54,9 @@ class Game:
         self.commands["use"] = use
         give = Command("give", " <item> to <someone> : donner un objet à quelqu'un", Actions.give, -1)
         self.commands["give"] = give
+        mot_command = Command("mot", "<le_mot> : entrer le mot secret", Actions.check_secret_word, -1)
+        self.commands["mot"] = mot_command
+    
     
 
         # Setup rooms
@@ -108,9 +111,9 @@ class Game:
         livre1 = Item("livre1", "spleen1", 1)
         livre2 = Item("livre2", "les misérAbles", 1)
         livre3 = Item("livre3", "madame boVary", 1)
-        livre4 = Item("livre4", "le Rouge et le nOir", 1)
+        livre4 = Item("livre4", "le rouge et le nOir", 1)
         livre5 = Item("livre5", "l'omBre du vent", 1)
-        livre6 = Item("livre6", "power", 1)
+        livre6 = Item("livre6", "poweR", 1)
         beamer= Item("beamer", "Un appareil qui permet de mémoriser des lieux.", 1)
         Bibliothécaire = Character("Bibliothécaire", "Un personnage qui garde les livres.", bibliotheque, ["Chut! Ici c'est une bibliothèque."])
         
@@ -223,12 +226,14 @@ class Game:
 
         livre_quest = Quest(
             title="Quête 4",
-            description=(
-                "Vous êtes dans le niveau haut du deuxieme wagon, dans la bibliothèque.\n"
-            ),
-            objectives=["trouver le mot secret"],
+            description="Trouver les lettres cachées dans les livres.",
+            objectives=[
+                "trouver les lettres",
+                "trouver le mot secret"
+            ],
             reward="Expert des livres"
-        )
+      )
+
         
 
         # Add quests to player's quest manager
@@ -249,22 +254,22 @@ class Game:
 
     # Process the command entered by the player
     def process_command(self, command_string) -> None:
-        # Remove leading/trailing spaces
+    # Remove leading/trailing spaces
         command_string = command_string.strip()
 
-        # If the command is empty, do nothing
+    # If the command is empty, do nothing
         if not command_string:
             return
-    
-        # Split the command string into a list of words
+
+    # Split the command string into a list of words
         list_of_words = command_string.split(" ")
 
         command_word = list_of_words[0]
 
-        # If the command is not recognized, print an error message
+    # If the command is not recognized, print an error message
         if command_word not in self.commands.keys():
             print(f"\nCommande '{command_word}' non reconnue. Entrez 'help' pour voir la liste des commandes disponibles.\n")
-        # If the command is recognized, execute it
+    # If the command is recognized, execute it
         else:
             command = self.commands[command_word]
             command.action(self, list_of_words, command.number_of_parameters)

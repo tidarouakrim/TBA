@@ -525,12 +525,18 @@ class Actions:
         Utiliser un objet sur une cible ou un plat.
         Syntaxe : use <objet> <cible/plat>
         """
-        if len(args) < 3:
-            print(f"❌ Syntaxe incorrecte : {args[0]} <objet> <cible>")
-            return False
-
         item_name = args[1].lower()
-        target_name = " ".join(args[2:]).lower()
+        room = game.player.current_room
+
+
+        # Cas livre
+        if item_name.startswith("livre"): 
+            if item_name not in room.inventory: 
+                print("Ce livre n'est pas ici.\n") 
+                return True
+            use_book(game, item_name)
+            return True
+        target_name = " ".join(args[2:]).lower() 
         room = game.player.current_room
 
         # Cas 1 : Clé sur coffre
@@ -553,43 +559,9 @@ class Actions:
                 print(f"\nLe {target_name} ne réagit pas au sel.\n")
             return True
         
-        # Cas 3 : Chercher une lettre majuscule dans les livres de la bibliothèque
-
-        if "livre" in item_name and "bibliotheque" in target_name:
-            book = room.inventory.get(item_name)
-            if book:
-                letter = book.check_for_uppercase()
-                if letter:
-                    print(f"Lettre {letter} enregistrée.")
-                    game.player.quest_manager.secret_word += letter  # Ajout de la lettre au mot secret
-                    if len(game.player.quest_manager.secret_word) == len(game.player.quest_manager.secret_word):
-                        print("Toutes les lettres ont été collectées !Veuillez entrer le mot secret.")  # Par exemple, 5 lettres doivent être collectées
-                else:
-                    print("Aucune lettre trouvée dans ce livre.")
-            else:
-                print(f"Le livre '{item_name}' n'est pas dans cette pièce.")
-            return True
 
         # Cas général : utilisation non permise
         print(f"❌ Vous ne pouvez pas utiliser {item_name} sur {target_name}.")
-        return False
-
-
-    @staticmethod
-    def check_secret_word(game, args, num_params):
-        """Permet de vérifier si le mot secret proposé est correct."""
-        if len(args) != 2:
-            print(f"❌ Syntaxe incorrecte : {args[0]} <mot_secret>")
-            return False
-
-        guessed_word = args[1]
-
-        # Vérifie le mot secret dans la quête active
-        for quest in game.player.quest_manager.active_quests:
-            if quest.title == "Quête 4" and quest.is_active:
-                return quest.check_final_word(guessed_word)
-
-        print("❌ Aucun mot secret à deviner.")
         return False
 
         
@@ -611,4 +583,58 @@ class Actions:
             game.player.quest_manager.complete_objective("Donner le plat sûr au PNJ")
 
         return True
+    
+    @staticmethod
+    def check_secret_word(game, args, num_params):
+        if len(args) < 2:
+            print("\nVous devez entrer un mot après la commande 'mot'.\n")
+            return False
+
+        mot = args[1].strip().upper()  # récupère le mot tapé après "mot"
+        if mot == "BRAVO":
+            print("✅ Mot correct ! Quête terminée.")
+            for quest in game.player.quest_manager.active_quests:
+                if quest.title == "Mot secret":
+                    quest.complete_objective("trouver le mot secret", game.player)
+            game.player.waiting_for_secret_word = False
+        else:
+            print("❌ Mot incorrect, essayez encore.")
    
+   # Dictionnaire des livres et des lettres qu'ils contiennent
+books_letters = {
+    "livre1": None,
+    "livre2": "A",
+    "livre3": "V",
+    "livre4": "O",
+    "livre5": "B",
+    "livre6": "R",
+}
+
+
+def use_book(game, item_name):
+    item_name = item_name.lower()
+    
+    if item_name not in books_letters:
+        print(f"Le livre {item_name} n'existe pas.\n")
+        return
+
+    letter = books_letters[item_name]
+    
+    if letter is None:
+        print("Aucune lettre trouvée.\n")
+    else:
+        if letter not in game.player.found_letters:
+            game.player.found_letters.append(letter)
+            print(f"Lettre {letter} enregistrée.\n")
+        else:
+            print(f"Lettre {letter} déjà enregistrée.\n")
+    
+    # Vérifier si toutes les lettres ont été trouvées
+    all_letters = [l for l in books_letters.values() if l is not None]
+    if set(game.player.found_letters) == set(all_letters):
+        print("Toutes les lettres ont été enregistrées.")
+        print("Veuillez trouver le mot secret.\n")
+
+
+
+    

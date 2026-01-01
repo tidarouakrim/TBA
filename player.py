@@ -32,6 +32,11 @@ class Player():
         self.rewards = []
         self.move_count = 0
         self.poisoned_plate = None 
+        self.found_letters = []
+        self.waiting_for_secret_word = False
+
+
+
 
 
 
@@ -67,6 +72,11 @@ class Player():
             print("🔔 Quête 'Le repas empoisonné' activée !")
 
             self.poisoned_plate = "salade"
+        if self.current_room.name == "bibliotheque":
+            # Activer la quête si elle n'est pas déjà active
+            self.quest_manager.activate_quest("Mot secret")
+            print("🔔 Quête 'Mot secret' activée !")
+
 
         return True
 
