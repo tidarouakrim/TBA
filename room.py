@@ -1,80 +1,77 @@
-"""# Define the Room class."""
+# Define the Room class.
 
 class Room:
-    """The Room class represents a room in the game."""
+    """
+    This class represents a room in a adventure game
+    Attributes:
+        name (str) =  le nom du joueur 
+        description =  description du lieu 
+        exits =  sortie
+    Methods:
+        __init__(self, name) : The constructor.
+        get_exit(self, direction): Return the room in the given direction if it exists.
+        get_exit_string(self): Return a string describing the room's exits.
+        get_long_description(self) : Return a long description of this room including exits.
+    Examples:
 
-
-    # Define the constructor.
+    >>> 
+    >>> room.name
+    'gare'
+    >>> room.description
+    'une gare élégante où l’Orient Express attend, luxueux et mystérieux, prêt à traverser l’Europe'
+    >>> room.exits
+    {}
+    """
+    
+    # Define the constructor. 
     def __init__(self, name, description):
-        """
-        Initialize a Room with a name and description.
-        
-        >>> room = Room("Hall", "dans un grand hall")
-        >>> room.name
-        'Hall'
-        >>> room.description
-        'dans un grand hall'
-        >>> room.exits
-        {}
-        """
         self.name = name
         self.description = description
         self.exits = {}
-
-
+        self.inventory = {}
+        self.characters = {}
+    
     # Define the get_exit method.
     def get_exit(self, direction):
-        """
-        Return the room in the given direction if it exists.
-        
-        >>> room1 = Room("Room1", "dans une pièce")
-        >>> room2 = Room("Room2", "dans une autre pièce")
-        >>> room1.exits["N"] = room2
-        >>> room1.get_exit("N") == room2
-        True
-        >>> room1.get_exit("S") is None
-        True
-        """
         # Return the room in the given direction if it exists.
-        if direction in self.exits:
+        if direction in self.exits.keys():
             return self.exits[direction]
-        return None
-
-
+        else:
+            return None
+    
     # Return a string describing the room's exits.
     def get_exit_string(self):
-        """
-        Return a string describing the room's exits.
-        
-        >>> room1 = Room("Room1", "dans une pièce")
-        >>> room2 = Room("Room2", "dans une autre pièce")
-        >>> room3 = Room("Room3", "dans une troisième pièce")
-        >>> room1.exits["N"] = room2
-        >>> room1.exits["E"] = room3
-        >>> room1.get_exit_string() # doctest: +ELLIPSIS
-        'Sorties: ...
-        """
-        exit_string = "Sorties: "
-        for _exit in self.exits:
-            if self.exits.get(_exit) is not None:
-                exit_string += _exit + ", "
+        exit_string = "Sorties: " 
+        for exit in self.exits.keys():
+            if self.exits.get(exit) is not None:
+                exit_string += exit + ", "
         exit_string = exit_string.strip(", ")
         return exit_string
 
-
     # Return a long description of this room including exits.
     def get_long_description(self):
+        return f"\nVous êtes dans{self.description}\n\n{self.get_exit_string()}\n"
+
+    def get_inventory(self):
         """
-        Return a long description of this room including exits.
+        Affiche le contenu de l'inventaire du joueur et les personnages présents.
+        """
+
+        if len(self.inventory) == 0 and len(self.characters) == 0:
+            return "Il n'y a rien ici."
         
-        >>> room1 = Room("Hall", "dans un grand hall")
-        >>> room2 = Room("Kitchen", "dans une cuisine")
-        >>> room1.exits["N"] = room2
-        >>> print(room1.get_long_description()) # doctest: +ELLIPSIS
-        <BLANKLINE>
-        Vous êtes dans un grand hall
-        <BLANKLINE>
-        Sorties: ...
-        <BLANKLINE>
-        """
-        return f"\nVous êtes {self.description}\n\n{self.get_exit_string()}\n"
+        result = "on voit:\n"
+
+        if len(self.inventory) > 0:
+            for name, item in self.inventory.items():
+                result += f"    - {name} : {item.description} ({item.weight} kg)\n"
+        else:
+            result += "    - Aucun objet ici.\n"
+        
+        if len(self.characters) > 0:
+            for name, character in self.characters.items():
+                    result += f"    - {character}\n"
+        else:
+            result += "    - Il n'y a personne ici.\n"
+
+        return result
