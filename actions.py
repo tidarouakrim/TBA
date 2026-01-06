@@ -523,52 +523,43 @@ class Actions:
     def repondre(game, args, num_params):
         player = game.player
 
-    # Initialiser la progression si nécessaire
-        if not hasattr(player, "final_interrogation_step"):
-            player.final_interrogation_step = 0
-
-    # Chercher la quête active
         quest = None
         for q in player.quest_manager.active_quests:
             if q.title == "Quête 6":
                 quest = q
                 break
-
         if quest is None:
             print("❌ Vous n'avez pas encore commencé cette quête.")
             return False
 
-    # Liste des questions
         questions = [
-            ("Où était la clé ?", "coffre"),
             ("Quel était le plat contaminé ?", player.poisoned_plate.lower()),
             ("Quel était l’objet de Claire ?", "parapluie"),
             ("Quel est le mot secret ?", "bravo")
         ]
 
+        if player.final_interrogation_step >= len(questions):
+            print("🎉 La mission finale est déjà terminée.")
+            return True
+
         step = player.final_interrogation_step
 
-    # Si aucune réponse fournie, afficher la question
         if len(args) < 2:
             print(f"Le contrôleur : {questions[step][0]}")
             return True
 
-        reponse = args[1].lower()
-
-    # Vérifier la réponse
+        reponse = " ".join(args[1:]).lower()
         bonne_reponse = questions[step][1]
+
         if reponse == bonne_reponse:
             print("✔️ Correct.")
             player.final_interrogation_step += 1
 
-        # Si dernière question, compléter la quête
             if player.final_interrogation_step == len(questions):
                 print("🎉 Le contrôleur sourit. Mission réussie ! Vous arrivez à destination.")
                 quest.complete_quest(player)
         else:
             print("❌ Mauvaise réponse.")
-
-    # Afficher la prochaine question si pas encore fini
         if player.final_interrogation_step < len(questions):
             print(f"Le contrôleur : {questions[player.final_interrogation_step][0]}")
 
@@ -658,6 +649,7 @@ class Actions:
             game.player.waiting_for_secret_word = False
         else:
             print("❌ Mot incorrect, essayez encore.")
+        return True
    
    # Dictionnaire des livres et des lettres qu'ils contiennent
 books_letters = {
@@ -685,15 +677,22 @@ def use_book(game, item_name):
         if letter not in game.player.found_letters:
             game.player.found_letters.append(letter)
             print(f"Lettre {letter} enregistrée.\n")
+            game.player.activate_secret_word_quest()
         else:
             print(f"Lettre {letter} déjà enregistrée.\n")
     
+    # 🔔 Activer automatiquement la quête "Mot secret" si pas déjà active
+    secret_quest_title = "Mot secret"
+    quest_manager = game.player.quest_manager
+    secret_quest = quest_manager.get_quest_by_title(secret_quest_title)
+    if secret_quest.status == "not started":
+        quest_manager.activate_quest(secret_quest_title)
+
     # Vérifier si toutes les lettres ont été trouvées
     all_letters = [l for l in books_letters.values() if l is not None]
     if set(game.player.found_letters) == set(all_letters):
         print("Toutes les lettres ont été enregistrées.")
         print("Veuillez trouver le mot secret.\n")
-
 
 
 

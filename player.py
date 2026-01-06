@@ -76,13 +76,18 @@ class Player():
 
             self.poisoned_plate = "salade"
         if self.current_room.name == "bibliotheque":
-            # Activer la quête si elle n'est pas déjà active
             self.quest_manager.activate_quest("Mot secret")
             print("🔔 Quête 'Mot secret' activée !")
 
+        if self.current_room.name == "espace_bagage":
+            # Activer la quête si elle n'est pas déjà active
+            self.quest_manager.activate_quest("Trouver a qui appartient les objets perdus")
+            print("🔔 Quête 'Trouver a qui appartient les objets perdus' activée !")
+
         # Après avoir affiché la description de la pièce
         if self.current_room.name == "bureau_du_Maitre_du_jeu" and not self.waiting_for_final_questions:
-            self.waiting_for_final_questions = True
+            self.quest_manager.activate_quest("Quête 6")
+            print("🔔 Quête 'Quête 6' activée !")
             self.ask_final_questions()
 
         return True
@@ -118,34 +123,6 @@ class Player():
 
         return True
     
-    def ask_final_questions(self):
-        """
-        Interroge le joueur sur les objets et événements des wagons précédents.
-        Chaque question doit être répondue correctement pour passer à la suivante.
-        """
-    # Liste des questions et réponses
-        final_questions = [
-            ("Où était la clé ?", "coussin"),
-            ("Quel était le repas contaminé ?", "salade"),
-            ("Quel était l'objet de Claire ?", "parapluie"),
-            ("Quel est le mot secret de la bibliothèque ?", "BRAVO")  # majuscules si tu veux
-        ]
-        print("\nLe contrôleur vous observe attentivement...")
-    
-        for question, correct_answer in final_questions:
-            answered = False
-            while not answered:
-                response = input(f"\nLe contrôleur demande : {question}\n> ").strip()
-            # Vérification insensible à la casse
-                if response.lower() == correct_answer.lower():
-                    print("✅ Bonne réponse !")
-                    answered = True
-                else:
-                    print("❌ Mauvaise réponse, essayez encore.")
-
-        print("\n🎉 Toutes les réponses sont correctes ! Vous avez validé la mission et arrivez enfin à destination !")
-        self.quest_manager.complete_objective("utiliser votre mémoire ou le beamer")  # valide la quête finale
-
     
     def get_inventory(self):
         """
@@ -217,3 +194,22 @@ class Player():
             for reward in self.rewards:
                 print(f"  • {reward}")
             print()
+
+    def ask_final_questions(self):
+        """
+        Pose les questions finales au joueur.
+        """
+        self.waiting_for_final_questions = True
+        self.final_interrogation_step = 0
+
+        print("\n🎤 Le contrôleur commence l’interrogatoire...\n")
+        print("Le contrôleur : Quel était le plat contaminé ?")
+
+    def activate_secret_word_quest(self):
+        """Active la quête 'Mot secret' si elle n'est pas encore active."""
+        quest_title = "Mot secret"
+        quest = self.quest_manager.get_quest_by_title(quest_title)
+        if quest and quest.status == "not started":
+            self.quest_manager.activate_quest(quest_title)
+            print(f"🔔 Quête '{quest_title}' activée !")
+

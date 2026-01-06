@@ -182,18 +182,6 @@ class Game:
         self.player = Player(input("\nEntrez votre nom: "))
         self.player.current_room = gare
         self._setup_quests()
-        quest1 = Quest(
-            title = "Quête 1",
-            description = (
-                "Vous êtes dans le niveau bas du wagon de première classe.\n"
-                "Madame Loisel a perdu sa parure.\n"
-                "Objectif : utiliser la clé sur le coffre pour la retrouver."
-            ),
-            objectives = [
-                "utiliser clé sur coffre"
-            ],
-            reward = "Parure de Madame Loisel récupérée")
-        self.player.quest_manager.add_quest(quest1)
 
 
         # Renseigner toutes les directions utilisées
@@ -276,6 +264,7 @@ class Game:
         self.player.quest_manager.add_quest(restaurant_quest)
         self.player.quest_manager.add_quest(livre_quest)
         self.player.quest_manager.add_quest(memoire_quest)
+        self. player.quest_manager.add_quest(valise_quest)
 
     # Play the game
     def play(self):
