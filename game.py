@@ -1,4 +1,5 @@
 # Description: Game class
+
 DEBUG = True
 
 from room import Room
@@ -9,6 +10,9 @@ from item import Item
 from character import Character
 from item import Beamer
 from quest import QuestManager, Quest
+from item import Item, Beamer
+from character import Character
+from quest import Quest, QuestManager
 
 class Game:
     
@@ -20,17 +24,16 @@ class Game:
         self.commands = {}
         self.player = None
         self.direction=set()
-    
-    # Setup the game
-    def setup(self):
+        self.direction = set()
 
+    def setup(self):
         # Setup commands
 
         help = Command("help", " : afficher cette aide", Actions.help, 0)
         self.commands["help"] = help
         quit = Command("quit", " : quitter le jeu", Actions.quit, 0)
         self.commands["quit"] = quit
-        go = Command("go", " <direction> : se déplacer dans une direction cardinale (N, E, S, O, U, D)", Actions.go, 1)
+        go = Command("go", " <direction> : se déplacer dans une direction cardinale (N, E, S, O, U, D, U, D)", Actions.go, 1)
         self.commands["go"] = go
         history = Command("history", " : afficher l'historique des pièces visitées", Actions.history, 0)
         self.commands["history"] = history
@@ -59,10 +62,7 @@ class Game:
         repondre_cmd = Command("repondre", "<réponse>", Actions.repondre, -1)
         self.commands["repondre"] = repondre_cmd
 
-    
-    
-
-        # Setup rooms
+         # Setup rooms
         gare = Room("gare", " la gare de départ de l’Orient Express, entouré de voyageurs élégants et de valises en cuir.")
         self.rooms.append(gare)
         piece1 = Room("piece1", " dans le niveau bas de première classe du premier wagon , luxueusement décoré, avec des sièges en velours, des tables basses et des lampes dorées.")
@@ -79,7 +79,29 @@ class Game:
         self.rooms.append(bureau_du_maitre_du_Jeu)
         locomotive = Room("locomotive", " la locomotive! Félicitations vous arrivez à votre destination ! Bon voyage...")
         self.rooms.append(locomotive)
-        # Create exits for rooms
+        
+        # Labyrinthe
+        lits_entree = Room("lits_entree", "à l’entrée du niveau bas du deuxième wagon. Les lits sont empilés de manière chaotique, formant des passages étroits. Une faible lumière filtre depuis le sud.")
+        self.rooms.append(lits_entree)
+        lits_croisement = Room("lits_croisement", "au centre du labyrinthe. Vous êtes entouré de lits superposés formant un croisement. Des ronflements lointains résonnent dans l’obscurité.")
+        self.rooms.append(lits_croisement)
+        lits_impasse = Room("lits_impasse", "dans une impasse étouffante. Un mur massif de lits bloque complètement le passage ouest. L’air est lourd et oppressant ; il faut revenir en arrière.")
+        self.rooms.append(lits_impasse)
+        lits_boucle = Room("lits_boucle", "dans un passage qui semble tourner en rond. Vous reconnaissez un matelas déchiré que vous avez déjà vu… attention à ne pas boucler indéfiniment.")
+        self.rooms.append(lits_boucle)
+        lits_vers_biblio = Room("lits_vers_biblio", "dans un passage qui monte légèrement. Une odeur familière de vieux papier et une lumière plus chaude proviennent du nord. C’est prometteur.")
+        self.rooms.append(lits_vers_biblio)
+        lits_sortie = Room("lits_sortie", "à la sortie du labyrinthe ! Vous apercevez une échelle menant vers le niveau supérieur. Vous avez réussi cette épreuve.")
+        self.rooms.append(lits_sortie)
+
+       
+
+        
+        # === CONNEXIONS ===
+        name_to_room = {r.name: r for r in self.rooms}
+        r = name_to_room
+
+         # Create exits for rooms
         gare.exits = {"N" : None, "E" : piece1, "S" : None, "O" : None,"U" : None, "D" : None}
         piece1.exits = {"N" :None , "E" : None, "S" : None, "O" : None, "U" : restaurant, "D" : None}
         restaurant.exits = {"N" : dortoir, "E" : None, "S" : None, "O" : None, "U" : None, "D" : piece1}
@@ -89,15 +111,33 @@ class Game:
         bureau_du_maitre_du_Jeu.exits = {"N" : locomotive, "E" : None, "S" : None, "O" : None, "U" : None, "D" : espace_bagage}
         locomotive.exits = {"N" : None, "E" : None, "S" : None, "O" : None,"U" : None, "D" : None}
         quit
-        # Ajouter des items à wagon_1_classe
+        r["restaurant"].exits.update({"N": r["lits_entree"], "D": r["piece1"]})
+        r["lits_entree"].exits.update({"N": r["lits_croisement"], "S": r["restaurant"]})
+        r["lits_croisement"].exits.update({"S": r["lits_entree"], "O": r["lits_impasse"], "E": r["lits_vers_biblio"], "N": r["lits_boucle"]})
+        r["lits_impasse"].exits["E"] = r["lits_croisement"]
+        r["lits_boucle"].exits["S"] = r["lits_croisement"]
+        r["lits_vers_biblio"].exits.update({"O": r["lits_croisement"], "N": r["lits_sortie"]})
+        r["lits_sortie"].exits.update({"S": r["lits_vers_biblio"], "U": r["bibliotheque"]})
+
+        
+        
+
+        for room in self.rooms:
+            self.direction.update(room.exits.keys())
+
+        # === OBJETS ET PERSONNAGES ===
+        # Première classe - COUSSIN + CLÉ CACHÉE SOUS LE COUSSIN
+        
         coffre = Item("coffre", "Un coffre ancien et verrouillé", 5)
-        tapis = Item("tapis", "Un tapis fin et coloré", 1)
+        tapis = Item("tapis", "Un petit tapis fin et coloré", 1)
         lampe = Item("lampe", "Une lampe posée sur une table", 2)
         livre = Item("livre", "Un livre ouvert sur un siège", 1)
-        cle = Item("clé", "Une clé cachée sous un coussin", 0.1)
+        clé = Item("clé", "Une clé ancienne et rouillée", 0.5)
         note = Item("note", "Une petite note mystérieuse", 0.05)
-        Madame_Loisel = Character("MadameLoisel", "Une dame élégante.", piece1, ["Avez-vous vu mon collier perdu?"])
-    
+        MadameLoisel = Character("MadameLoisel", "Une femme élégante et mystérieuse.", piece1, ["Avez-vous vu mon collier perdu"])
+            # Pas de clé au début
+        
+
         # Ajouter des items à wagon_restaurant
         ragout= Item("ragoût", "Un ragoût de bœuf fumant et appétissant", 1.2)
         salade = Item("salade", "Une salade fraîche aux champignons et herbes", 0.5)
@@ -136,9 +176,10 @@ class Game:
         piece1.inventory[tapis.name] = tapis
         piece1.inventory[lampe.name] = lampe
         piece1.inventory[livre.name] = livre
-        piece1.inventory[cle.name] = cle
+        piece1.inventory[clé.name] = clé
+
         piece1.inventory[note.name] = note
-        piece1.characters[Madame_Loisel.name] = Madame_Loisel
+        piece1.characters[MadameLoisel.name] = MadameLoisel
 
         restaurant.inventory[fourchette.name] = fourchette
         restaurant.inventory[couteau.name] = couteau
@@ -264,12 +305,16 @@ class Game:
         self.player.quest_manager.add_quest(restaurant_quest)
         self.player.quest_manager.add_quest(livre_quest)
         self.player.quest_manager.add_quest(memoire_quest)
-        self. player.quest_manager.add_quest(valise_quest)
+        self.player.quest_manager.add_quest(valise_quest)
+        self.player.quest_manager.add_quest(labyrinthe_quest)
+        
+
 
     # Play the game
     def play(self):
         self.setup()
         self.print_welcome()
+
 
         # Loop until the game is finished
         while not self.finished:
@@ -285,15 +330,24 @@ class Game:
     # If the command is empty, do nothing
         if not command_string:
             return
+    # Remove leading/trailing spaces
+        command_string = command_string.strip()
 
+    # If the command is empty, do nothing
+        if not command_string:
+            return
+
+    # Split the command string into a list of words
     # Split the command string into a list of words
         list_of_words = command_string.split(" ")
 
         command_word = list_of_words[0]
 
     # If the command is not recognized, print an error message
+    # If the command is not recognized, print an error message
         if command_word not in self.commands.keys():
             print(f"\nCommande '{command_word}' non reconnue. Entrez 'help' pour voir la liste des commandes disponibles.\n")
+    # If the command is recognized, execute it
     # If the command is recognized, execute it
         else:
             command = self.commands[command_word]
@@ -308,6 +362,8 @@ class Game:
 
 
 
+
+
 def main():
     # Create a game object and play the game
     Game().play()
@@ -315,4 +371,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

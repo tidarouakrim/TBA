@@ -24,7 +24,7 @@ class Character:
     def move(self):
         from game import DEBUG
 
-        if self.name in ["Gouteur", "Contrôleur"]:
+        if self.name in ["Gouteur", "Contrôleur", "Paul", "Claire", "Henri"]:
             if DEBUG:
                 print(f"DEBUG: {self.name} reste dans {self.current_room.name}.")
             return False
@@ -72,5 +72,3 @@ class Character:
 
         # Remet le message à la fin pour continuer le cycle
         self.msgs.append(msg)
-
-

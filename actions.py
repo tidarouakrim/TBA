@@ -1,3 +1,7 @@
+# actions.py 
+
+from item import Item  
+
 # Description: The actions module.
 
 # The actions module contains the functions that are called when a command is executed.
@@ -17,7 +21,6 @@ MSG0 = "\nLa commande '{command_word}' ne prend pas de paramètre.\n"
 MSG1 = "\nLa commande '{command_word}' prend 1 seul paramètre.\n"
 
 class Actions:
-
     def go(game, list_of_words, number_of_parameters):
         """
         Move the player in the direction specified by the parameter.
@@ -44,6 +47,14 @@ class Actions:
         False
 
         """
+        direction_map = {
+            "N": "N", "NORD": "N",
+            "S": "S", "SUD": "S",
+            "E": "E", "EST": "E",
+            "O": "O", "OUEST": "O",
+            "U": "U", "UP": "U",
+            "D": "D", "DOWN": "D"
+        }
         direction_map = {
         "N": "N", "NORD": "N",
         "S": "S", "SUD": "S",
@@ -519,57 +530,90 @@ class Actions:
         game.player.show_rewards()
         return True
 
-    @staticmethod
-    def repondre(game, args, num_params):
-        player = game.player
 
-        quest = None
-        for q in player.quest_manager.active_quests:
-            if q.title == "Quête 6":
-                quest = q
-                break
-        if quest is None:
-            print("❌ Vous n'avez pas encore commencé cette quête.")
+    @staticmethod
+    def give(game, list_of_words, number_of_parameters):
+        """
+        Donner un objet ou un plat à un PNJ.
+        Syntaxes :
+          - give <plat> <PNJ>          (dans le restaurant)
+          - give <objet> to <PNJ>      (dans l'espace bagage)
+        """
+        player = game.player
+        room = player.current_room
+
+    # Vérification nombre de paramètres
+        if len(list_of_words) < 2:
+            print("\nLa commande 'donner' prend au moins 1 paramètre.\n")
             return False
 
-        questions = [
-            ("Quel était le plat contaminé ?", player.poisoned_plate.lower()),
-            ("Quel était l’objet de Claire ?", "parapluie"),
-            ("Quel est le mot secret ?", "bravo")
-        ]
+    # ======================
+    # CAS RESTAURANT
+    # ======================
+        if room.name == "restaurant":
+            if len(list_of_words) < 3:
+                print("\nUsage : give <plat> <PNJ>\n")
+                return False
 
-        if player.final_interrogation_step >= len(questions):
-            print("🎉 La mission finale est déjà terminée.")
-            return True
+            plat = list_of_words[1].lower()
+            pnj_name = list_of_words[2].title()
 
-        step = player.final_interrogation_step
+            if plat == player.poisoned_plate:
+                print(f"\n☠️ {pnj_name} goûte le plat empoisonné et meurt ! La quête échoue.\n")
+                return True
+            else:
+                print(f"\n✅ {pnj_name} goûte le plat sûr et vous complétez la quête !\n")
+                player.quest_manager.complete_objective(
+                    "Donner le plat sûr au PNJ"
+                )
+                return True
 
-        if len(args) < 2:
-            print(f"Le contrôleur : {questions[step][0]}")
-            return True
+    # ======================
+    # CAS ESPACE BAGAGE
+    # ======================
+        elif room.name == "espace_bagage":
+            if len(list_of_words) < 4 or "to" not in list_of_words:
+                print("\nUsage : give <objet> to <personnage>\n")
+                return False
 
-        reponse = " ".join(args[1:]).lower()
-        bonne_reponse = questions[step][1]
+            to_idx = list_of_words.index("to")
+            objet = " ".join(list_of_words[1:to_idx]).lower()
+            perso = " ".join(list_of_words[to_idx+1:]).title()
 
-        if reponse == bonne_reponse:
-            print("✔️ Correct.")
-            player.final_interrogation_step += 1
+            if objet not in player.inventory:
+                print(f"\nVous n'avez pas {objet}.\n")
+                return False
 
-            if player.final_interrogation_step == len(questions):
-                print("🎉 Le contrôleur sourit. Mission réussie ! Vous arrivez à destination.")
-                quest.complete_quest(player)
+            if perso not in room.characters:
+                print(f"\n{perso} n'est pas ici.\n")
+                return False
+
+        # Vérification correspondance objet → personnage
+            mapping = {"montre": "Paul", "parapluie": "Claire", "lettre": "Henri"}
+
+            if mapping.get(objet) == perso:
+                print(f"\n{perso} récupère son {objet} avec joie ! Merci !\n")
+                del player.inventory[objet]
+                player.quest_manager.complete_objective(
+                    f"restituer {objet} à {perso}"
+                )
+                return True
+            else:
+                print(f"\n{perso} : \"Ce n'est pas à moi.\"\n")
+                return False
+
+    # ======================
+    # CAS IMPOSSIBLE
+    # ======================
         else:
-            print("❌ Mauvaise réponse.")
-        if player.final_interrogation_step < len(questions):
-            print(f"Le contrôleur : {questions[player.final_interrogation_step][0]}")
-
-        return True
+            print("\nImpossible de donner quelque chose ici.\n")
+            return False
 
 
-
+        
 
     @staticmethod
-    def use(game, args, num_params):
+    def use(game, args, _):
         """
         Utiliser un objet sur une cible ou un plat.
         Syntaxe : use <objet> <cible/plat>
@@ -590,12 +634,13 @@ class Actions:
 
         # Cas 1 : Clé sur coffre
         if item_name == "clé" and target_name == "coffre":
-            if "coffre" in room.inventory:
-                print("✅ Vous ouvrez le coffre et découvrez la parure de Madame Loisel !")
-                game.player.quest_manager.check_action_objectives("utiliser clé sur coffre")
-                return True
-            else:
-                print("❌ Il n'y a pas de coffre ici.")
+                if "coffre" in room.inventory:
+                    print("✅ Coffre ouvert ! Parure retrouvée !")
+                    del room.inventory["coffre"]
+                    game.player.quest_manager.complete_objective("utiliser clé sur coffre")
+                    return True
+                else:
+                    print("❌ Il n'y a pas de coffre ici.")
                 return False
 
         # Cas 2 : Sel sur plat
@@ -612,28 +657,62 @@ class Actions:
         # Cas général : utilisation non permise
         print(f"❌ Vous ne pouvez pas utiliser {item_name} sur {target_name}.")
         return False
+            
+    @staticmethod
+    def repondre(game, args, num_params):
+        player = game.player
 
-        
-    def give(game, list_of_words, number_of_parameters):
-        """
-        Donner un plat au PNJ.
-        Exemple: donner ragoût
-        """
-        if len(list_of_words) < 2:
-            print("\nLa commande 'donner' prend 1 paramètre.\n")
+    # Initialiser la progression si nécessaire
+        if not hasattr(player, "final_interrogation_step"):
+            player.final_interrogation_step = 0
+
+        # Chercher la quête active
+        quest = None
+        for q in player.quest_manager.active_quests:
+            if q.title == "Quête 6":
+                quest = q
+                break
+
+        if quest is None:
+            print("❌ Vous n'avez pas encore commencé cette quête.")
             return False
 
-        plat = " ".join(list_of_words[1:]).lower()
+    # Liste des questions
+        questions = [
+            ("Où était la clé ?", "coffre"),
+            ("Quel était le plat contaminé ?", "salade"),
+            ("Quel était l’objet de Claire ?", "parapluie"),
+            ("Quel est le mot secret ?", "BRAVO")
+        ]
 
-        if plat == game.player.poisoned_plate:
-            print("\nLe PNJ goûte le plat empoisonné et meurt ! La quête échoue.\n")
+        step = player.final_interrogation_step
+
+    # Si aucune réponse fournie, afficher la question
+        if len(args) < 2:
+            print(f"Le contrôleur : {questions[step][0]}")
+            return True
+
+        reponse = args[1].lower()
+
+    # Vérifier la réponse
+        bonne_reponse = questions[step][1]
+        if reponse == bonne_reponse:
+            print("✔️ Correct.")
+            player.final_interrogation_step += 1
+
+        # Si dernière question, compléter la quête
+            if player.final_interrogation_step == len(questions):
+                print("🎉 Le contrôleur sourit. Mission réussie ! Vous arrivez à destination.")
+                quest.complete_quest(player)
         else:
-            print("\nLe PNJ goûte le plat sûr et vous complétez la quête !\n")
-            game.player.quest_manager.complete_objective("Donner le plat sûr au PNJ")
+            print("❌ Mauvaise réponse.")
+
+    # Afficher la prochaine question si pas encore fini
+        if player.final_interrogation_step < len(questions):
+            print(f"Le contrôleur : {questions[player.final_interrogation_step][0]}")
 
         return True
     
-   
     @staticmethod
     def check_secret_word(game, args, num_params):
         if len(args) < 2:
@@ -648,8 +727,7 @@ class Actions:
                     quest.complete_objective("trouver le mot secret", game.player)
             game.player.waiting_for_secret_word = False
         else:
-            print("❌ Mot incorrect, essayez encore.")
-        return True
+            print("❌ Mot incorrect, essayez encore.")    
    
    # Dictionnaire des livres et des lettres qu'ils contiennent
 books_letters = {
@@ -677,26 +755,12 @@ def use_book(game, item_name):
         if letter not in game.player.found_letters:
             game.player.found_letters.append(letter)
             print(f"Lettre {letter} enregistrée.\n")
-            game.player.activate_secret_word_quest()
         else:
             print(f"Lettre {letter} déjà enregistrée.\n")
     
-    # 🔔 Activer automatiquement la quête "Mot secret" si pas déjà active
-    secret_quest_title = "Mot secret"
-    quest_manager = game.player.quest_manager
-    secret_quest = quest_manager.get_quest_by_title(secret_quest_title)
-    if secret_quest.status == "not started":
-        quest_manager.activate_quest(secret_quest_title)
-
     # Vérifier si toutes les lettres ont été trouvées
     all_letters = [l for l in books_letters.values() if l is not None]
     if set(game.player.found_letters) == set(all_letters):
         print("Toutes les lettres ont été enregistrées.")
         print("Veuillez trouver le mot secret.\n")
 
-
-
-
-
-
-    
