@@ -1,29 +1,23 @@
-# Description: Game class
-DEBUG = True
+# game.py 
 
+DEBUG = True
 from room import Room
 from player import Player
 from command import Command
 from actions import Actions
-from item import Item
+from item import Item, Beamer
 from character import Character
-from item import Beamer
-from quest import QuestManager, create_first_quest
+from quest import Quest, QuestManager
 
 class Game:
-    
-    # Constructor Import modules
-
     def __init__(self):
         self.finished = False
         self.rooms = []
         self.commands = {}
         self.player = None
-        self.direction=set()
-    
-    # Setup the game
-    def setup(self):
+        self.direction = set()
 
+    def setup(self):
         # Setup commands
 
         help = Command("help", " : afficher cette aide", Actions.help, 0)
@@ -50,8 +44,16 @@ class Game:
         self.commands["beamer_teleportation"] = beamer_teleportation
         talk = Command("talk", " <someone> : parler à quelqu'un", Actions.talk, 1)
         self.commands["talk"] = talk
+        use = Command("use", " <item> [on <target>] : utiliser un objet, éventuellement sur une cible", Actions.use, -1)
+        self.commands["use"] = use
+        give = Command("give", " <item> to <someone> : donner un objet à quelqu'un", Actions.give, -1)
+        self.commands["give"] = give
+        mot_command = Command("mot", "<le_mot> : entrer le mot secret", Actions.check_secret_word, -1)
+        self.commands["mot"] = mot_command
+        repondre_cmd = Command("repondre", "<réponse>", Actions.repondre, -1)
+        self.commands["repondre"] = repondre_cmd
 
-        # Setup rooms
+         # Setup rooms
         gare = Room("gare", " la gare de départ de l’Orient Express, entouré de voyageurs élégants et de valises en cuir.")
         self.rooms.append(gare)
         piece1 = Room("piece1", " dans le niveau bas de première classe du premier wagon , luxueusement décoré, avec des sièges en velours, des tables basses et des lampes dorées.")
@@ -60,7 +62,7 @@ class Game:
         self.rooms.append(restaurant)
         dortoir = Room("dortoir", " le niveau bas du deuxième wagon, dans le dortoir de luxe, où les somptueux lits forment un véritable labyrinthe.")
         self.rooms.append(dortoir)
-        bibliotheque = Room("bibliothèque", " le niveau haut du deuxième wagon dans la bibliothèque silencieuse, remplie de livres anciens.")
+        bibliotheque = Room("bibliotheque", " le niveau haut du deuxième wagon dans la bibliothèque silencieuse, remplie de livres anciens.")
         self.rooms.append(bibliotheque)
         espace_bagage = Room("espace_bagage", " le niveau bas du troisième wagon dans l'espace bagage, où valises et coffres s’entassent et quelques affaires traînent sur le sol.")
         self.rooms.append(espace_bagage)
@@ -68,7 +70,29 @@ class Game:
         self.rooms.append(bureau_du_maitre_du_Jeu)
         locomotive = Room("locomotive", " la locomotive! Félicitations vous arrivez à votre destination ! Bon voyage...")
         self.rooms.append(locomotive)
-        # Create exits for rooms
+        
+        # Labyrinthe
+        lits_entree = Room("lits_entree", "à l’entrée du niveau bas du deuxième wagon. Les lits sont empilés de manière chaotique, formant des passages étroits. Une faible lumière filtre depuis le sud.")
+        self.rooms.append(lits_entree)
+        lits_croisement = Room("lits_croisement", "au centre du labyrinthe. Vous êtes entouré de lits superposés formant un croisement. Des ronflements lointains résonnent dans l’obscurité.")
+        self.rooms.append(lits_croisement)
+        lits_impasse = Room("lits_impasse", "dans une impasse étouffante. Un mur massif de lits bloque complètement le passage ouest. L’air est lourd et oppressant ; il faut revenir en arrière.")
+        self.rooms.append(lits_impasse)
+        lits_boucle = Room("lits_boucle", "dans un passage qui semble tourner en rond. Vous reconnaissez un matelas déchiré que vous avez déjà vu… attention à ne pas boucler indéfiniment.")
+        self.rooms.append(lits_boucle)
+        lits_vers_biblio = Room("lits_vers_biblio", "dans un passage qui monte légèrement. Une odeur familière de vieux papier et une lumière plus chaude proviennent du nord. C’est prometteur.")
+        self.rooms.append(lits_vers_biblio)
+        lits_sortie = Room("lits_sortie", "à la sortie du labyrinthe ! Vous apercevez une échelle menant vers le niveau supérieur. Vous avez réussi cette épreuve.")
+        self.rooms.append(lits_sortie)
+
+       
+
+        
+        # === CONNEXIONS ===
+        name_to_room = {r.name: r for r in self.rooms}
+        r = name_to_room
+
+         # Create exits for rooms
         gare.exits = {"N" : None, "E" : piece1, "S" : None, "O" : None,"U" : None, "D" : None}
         piece1.exits = {"N" :None , "E" : None, "S" : None, "O" : None, "U" : restaurant, "D" : None}
         restaurant.exits = {"N" : dortoir, "E" : None, "S" : None, "O" : None, "U" : None, "D" : piece1}
@@ -78,15 +102,33 @@ class Game:
         bureau_du_maitre_du_Jeu.exits = {"N" : locomotive, "E" : None, "S" : None, "O" : None, "U" : None, "D" : espace_bagage}
         locomotive.exits = {"N" : None, "E" : None, "S" : None, "O" : None,"U" : None, "D" : None}
         quit
-        # Ajouter des items à wagon_1_classe
+        r["restaurant"].exits.update({"N": r["lits_entree"], "D": r["piece1"]})
+        r["lits_entree"].exits.update({"N": r["lits_croisement"], "S": r["restaurant"]})
+        r["lits_croisement"].exits.update({"S": r["lits_entree"], "O": r["lits_impasse"], "E": r["lits_vers_biblio"], "N": r["lits_boucle"]})
+        r["lits_impasse"].exits["E"] = r["lits_croisement"]
+        r["lits_boucle"].exits["S"] = r["lits_croisement"]
+        r["lits_vers_biblio"].exits.update({"O": r["lits_croisement"], "N": r["lits_sortie"]})
+        r["lits_sortie"].exits.update({"S": r["lits_vers_biblio"], "U": r["bibliotheque"]})
+
+        
+        
+
+        for room in self.rooms:
+            self.direction.update(room.exits.keys())
+
+        # === OBJETS ET PERSONNAGES ===
+        # Première classe - COUSSIN + CLÉ CACHÉE SOUS LE COUSSIN
+        
         coffre = Item("coffre", "Un coffre ancien et verrouillé", 5)
-        tapis = Item("tapis", "Un tapis fin et coloré", 1)
+        tapis = Item("tapis", "Un petit tapis fin et coloré", 1)
         lampe = Item("lampe", "Une lampe posée sur une table", 2)
         livre = Item("livre", "Un livre ouvert sur un siège", 1)
-        cle = Item("clé", "Une clé cachée sous un coussin", 0.1)
+        clé = Item("clé", "Une clé ancienne et rouillée", 0.5)
         note = Item("note", "Une petite note mystérieuse", 0.05)
-        Madame_Loisel = Character("MadameLoisel", "Une dame élégante.", piece1, ["Avez-vous vu mon collier perdu?"])
-    
+        MadameLoisel = Character("MadameLoisel", "Une femme élégante et mystérieuse.", piece1, ["Avez-vous vu mon collier perdu"])
+            # Pas de clé au début
+        
+
         # Ajouter des items à wagon_restaurant
         ragout= Item("ragoût", "Un ragoût de bœuf fumant et appétissant", 1.2)
         salade = Item("salade", "Une salade fraîche aux champignons et herbes", 0.5)
@@ -100,12 +142,12 @@ class Game:
         Gouteur = Character("Gouteur", "Un personnage qui goûte les plats.", restaurant, ["Attention il ne faut pas m'empoisonner!"])
 
         # Ajouter des items à wagon_bibliothèque
-        livre1 = Item("livre1", "titre", 1)
-        livre2 = Item("livre2", "titre", 1)
-        livre3 = Item("livre3", "titre", 1)
-        livre4 = Item("livre4", "titre", 1)
-        livre5 = Item("livre5", "titre", 1)
-        livre6 = Item("livre6", "titre", 1)
+        livre1 = Item("livre1", "spleen1", 1)
+        livre2 = Item("livre2", "les misérAbles", 1)
+        livre3 = Item("livre3", "madame boVary", 1)
+        livre4 = Item("livre4", "le rouge et le nOir", 1)
+        livre5 = Item("livre5", "l'omBre du vent", 1)
+        livre6 = Item("livre6", "poweR", 1)
         beamer= Item("beamer", "Un appareil qui permet de mémoriser des lieux.", 1)
         Bibliothécaire = Character("Bibliothécaire", "Un personnage qui garde les livres.", bibliotheque, ["Chut! Ici c'est une bibliothèque."])
         
@@ -125,9 +167,10 @@ class Game:
         piece1.inventory[tapis.name] = tapis
         piece1.inventory[lampe.name] = lampe
         piece1.inventory[livre.name] = livre
-        piece1.inventory[cle.name] = cle
+        piece1.inventory[clé.name] = clé
+
         piece1.inventory[note.name] = note
-        piece1.characters[Madame_Loisel.name] = Madame_Loisel
+        piece1.characters[MadameLoisel.name] = MadameLoisel
 
         restaurant.inventory[fourchette.name] = fourchette
         restaurant.inventory[couteau.name] = couteau
@@ -160,6 +203,8 @@ class Game:
 
         bureau_du_maitre_du_Jeu.characters[Controleur.name] = Controleur
 
+       
+
         # Renseigner toutes les directions utilisées 
         for room in self.rooms:
             self.direction.update(room.exits.keys())
@@ -168,14 +213,105 @@ class Game:
 
         self.player = Player(input("\nEntrez votre nom: "))
         self.player.current_room = gare
+        self._setup_quests()
+        quest1 = Quest(
+            title = "Quête 1",
+            description = (
+                "Vous êtes dans le niveau bas du wagon de première classe.\n"
+                "Madame Loisel a perdu sa parure.\n"
+                "Objectif : utiliser la clé sur le coffre pour la retrouver."
+            ),
+            objectives = [
+                "utiliser clé sur coffre"
+            ],
+            reward = "Parure de Madame Loisel récupérée")
+        self.player.quest_manager.add_quest(quest1)
 
-        self.quest_manager = QuestManager(self.player)
-        quest1 = create_first_quest()
-        self.quest_manager.add_quest(quest1)
 
         # Renseigner toutes les directions utilisées
         for room in self.rooms:
             self.direction.update(room.exits.keys())
+            
+
+
+    def _setup_quests(self):
+        """Initialize all quests."""
+        parure_quest = Quest(
+            title="Quête 1",
+            description=(
+                "Vous êtes dans le niveau bas du wagon de première classe.\n"
+                "Madame Loisel a perdu sa parure.\n"
+                "Objectif : utiliser la clé sur le coffre pour la retrouver."
+            ),
+            objectives=["utiliser clé sur coffre"],
+            reward="Parure de Madame Loisel récupérée"
+        )
+
+
+        restaurant_quest = Quest(
+            title="Quête 2",
+            description=(
+                "Vous êtes dans le niveau haut du wagon, dans le restaurant.\n"
+                "le repas est empoisonné.\n"
+                "Objectif : trouver quel repas est empoisonné."
+            ),
+            objectives=["utiliser le sel"],
+            reward="repas sain et sauf"
+        )
+
+        labyrinthe_quest = Quest(
+            title="Quête 3",
+            description=(
+                "Vous êtes dans le niveau bas du deuxieme wagon, dans le dortoir.\n"
+                "Objectif : trouver la sortie."
+            ),
+            objectives=["utiliser les directions"],
+            reward="Expert en sens de l'orientation"
+        )
+
+        livre_quest = Quest(
+            title="Quête 4",
+            description="Vous êtes dans le niveau haut du deuxieme wagon, dans la bibliotheque.\n"
+            "Trouver les lettres cachées dans les livres.",
+            objectives=[
+                "trouver les lettres",
+                "trouver le mot secret"
+            ],
+            reward="Expert des livres"
+      )
+        
+        valise_quest = Quest(
+            title="Quête 5",
+            description=(
+                "Vous êtes dans le niveau bas du troisième wagon, dans l'espace bagage.\n"
+                "les affaires sont eparpillées.\n"
+                "Objectif : trouver les affaires de chque personnages."
+            ),
+            objectives=["utiliser les indices"],
+            reward="Expert rangement "
+        )
+
+        memoire_quest = Quest(
+            title="Quête 6",
+            description=(
+                "Vous êtes dans le niveau haut du troisième wagon, dans le bureau du maitre du jeu.\n"
+                "Objectif : répondre correctement a toutes les questions."
+            ),
+            objectives=["utiliser votre mémoire ou le beamer"],
+            reward="Arrive à destination"
+        )
+
+        
+
+        # Add quests to player's quest manager
+        self.player.quest_manager.add_quest(parure_quest)
+        self.player.quest_manager.add_quest(restaurant_quest)
+        self.player.quest_manager.add_quest(livre_quest)
+        self.player.quest_manager.add_quest(memoire_quest)
+        self.player.quest_manager.add_quest(valise_quest)
+        self.player.quest_manager.add_quest(labyrinthe_quest)
+        
+
 
     # Play the game
     def play(self):
@@ -190,22 +326,22 @@ class Game:
 
     # Process the command entered by the player
     def process_command(self, command_string) -> None:
-        # Remove leading/trailing spaces
+    # Remove leading/trailing spaces
         command_string = command_string.strip()
 
-        # If the command is empty, do nothing
+    # If the command is empty, do nothing
         if not command_string:
             return
-    
-        # Split the command string into a list of words
+
+    # Split the command string into a list of words
         list_of_words = command_string.split(" ")
 
         command_word = list_of_words[0]
 
-        # If the command is not recognized, print an error message
+    # If the command is not recognized, print an error message
         if command_word not in self.commands.keys():
             print(f"\nCommande '{command_word}' non reconnue. Entrez 'help' pour voir la liste des commandes disponibles.\n")
-        # If the command is recognized, execute it
+    # If the command is recognized, execute it
         else:
             command = self.commands[command_word]
             command.action(self, list_of_words, command.number_of_parameters)
@@ -216,7 +352,8 @@ class Game:
         print("Entrez 'help' si vous avez besoin d'aide.")
         #
         print(self.player.current_room.get_long_description())
-    
+
+
 
 def main():
     # Create a game object and play the game
@@ -225,4 +362,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

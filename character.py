@@ -66,5 +66,3 @@ class Character:
 
         # Remet le message à la fin pour continuer le cycle
         self.msgs.append(msg)
-
-

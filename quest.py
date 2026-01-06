@@ -1,3 +1,10 @@
+<<<<<<< HEAD
+class Quest:
+    def __init__(self, title, description, objectives=None, reward=None):
+        self.title = title
+        self.description = description
+        self.objectives = objectives or []
+=======
 """ Define the Quest class"""
 
 class Quest:
@@ -9,20 +16,32 @@ class Quest:
         self.title = title
         self.description = description
         self.objectives = objectives if objectives is not None else []
+>>>>>>> origin/main
         self.completed_objectives = []
         self.is_completed = False
         self.is_active = False
         self.reward = reward
+<<<<<<< HEAD
+
+    def activate(self):
+        self.is_active = True
+        print(f"\nNouvelle quête activée : {self.title}\n{self.description}\n")
+=======
         
     def activate(self):
         self.is_active = True
         print(f"\nNouvelle quête activée: {self.title}")
         print(f"{self.description}\n")
+>>>>>>> origin/main
 
     def complete_objective(self, objective, player=None):
         if objective in self.objectives and objective not in self.completed_objectives:
             self.completed_objectives.append(objective)
+<<<<<<< HEAD
+            print(f"Objectif accompli : {objective}")
+=======
             print(f"Objectif accompli: {objective}")
+>>>>>>> origin/main
             if len(self.completed_objectives) == len(self.objectives):
                 self.complete_quest(player)
             return True
@@ -31,6 +50,13 @@ class Quest:
     def complete_quest(self, player=None):
         if not self.is_completed:
             self.is_completed = True
+<<<<<<< HEAD
+            print(f"\nQuête terminée : {self.title} !")
+            if self.reward and player:
+                player.add_reward(self.reward)
+
+class QuestManager:
+=======
             print(f"\nQuête terminée: {self.title}")
             if self.reward:
                 print(f"Récompense: {self.reward}")
@@ -67,6 +93,7 @@ class QuestManager:
     """
     This class manages all quests in the game.
     """
+>>>>>>> origin/main
     def __init__(self, player=None):
         self.quests = []
         self.active_quests = []
@@ -75,6 +102,21 @@ class QuestManager:
     def add_quest(self, quest):
         self.quests.append(quest)
 
+<<<<<<< HEAD
+    def activate_quest(self, title):
+        for q in self.quests:
+            if q.title == title and not q.is_active:
+                q.activate()
+                self.active_quests.append(q)
+                return True
+        return False
+
+    def complete_objective(self, objective):
+        for q in self.active_quests[:]:
+            if q.complete_objective(objective):
+                if q.is_completed:
+                    self.active_quests.remove(q)
+=======
     def activate_quest(self, quest_title):
         for quest in self.quests:
             if quest.title == quest_title and not quest.is_active:
@@ -88,10 +130,22 @@ class QuestManager:
             if quest.complete_objective(objective_text):
                 if quest.is_completed:
                     self.active_quests.remove(quest)
+>>>>>>> origin/main
                 return True
         return False
 
     def check_action_objectives(self, action, target=None):
+<<<<<<< HEAD
+        for q in self.active_quests[:]:
+            variations = [action]
+            if target:
+                variations += [f"{action} {target}", f"{action} sur {target}"]
+            for var in variations:
+                if q.complete_objective(var):
+                    if q.is_completed:
+                        self.active_quests.remove(q)
+                    break
+=======
         for quest in self.active_quests[:]:
             quest.check_action_objective(action, target, self.player)
             if quest.is_completed:
@@ -112,3 +166,4 @@ def create_first_quest():
     reward = "Parure de Madame Loisel récupérée"
 
     return Quest(title, description, objectives, reward)
+>>>>>>> origin/main
