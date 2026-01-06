@@ -6,6 +6,7 @@ class Player():
     Attributes:
         name (str) =  le nom du joueur 
         current_room (Room) =   le lieu dans lequel se trouve le joueur 
+<<<<<<< HEAD
 
     Methods:
         __init__(self, name) : The constructor.
@@ -19,7 +20,21 @@ class Player():
     none
  
     """
+=======
+>>>>>>> origin/main
 
+    Methods:
+        __init__(self, name) : The constructor.
+
+    Examples:
+
+    >>> p = Player("Julie")
+    >>> p.name
+    'Julie'
+    >>> player.current_room
+    none
+ 
+    """
     # Define the constructor.
     def __init__(self, name, max_weight=6):
         self.name = name
@@ -27,6 +42,7 @@ class Player():
         self.history = []
         self.inventory = {}
         self.max_weight = max_weight
+<<<<<<< HEAD
         self.quest_manager = QuestManager(self)  
         self.rewards = []
         self.move_count = 0
@@ -37,6 +53,10 @@ class Player():
         self.waiting_for_final_questions = False
 
     
+=======
+        
+    # Define the move method.
+>>>>>>> origin/main
     def move(self, direction):
         # Get the next room from the exits dictionary of the current room.
         next_room = self.current_room.exits[direction]
@@ -52,6 +72,7 @@ class Player():
         self.current_room = next_room
         print(self.current_room.get_long_description())
         print(self.get_history())
+<<<<<<< HEAD
         # Compteur de mouvements
         self.move_count += 1
         self.quest_manager.check_action_objectives("Se déplacer", self.move_count)
@@ -91,6 +112,8 @@ class Player():
             print("\n🎉 Vous avez trouvé la sortie du labyrinthe ! Quête réussie !\n")
             self.quest_manager.complete_objective("Trouver la sortie du labyrinthe")
 
+=======
+>>>>>>> origin/main
         return True
 
     def get_history(self):
@@ -124,6 +147,7 @@ class Player():
 
         return True
     
+<<<<<<< HEAD
     def ask_final_questions(self):
         """
         Interroge le joueur sur les objets et événements des wagons précédents.
@@ -153,6 +177,8 @@ class Player():
         self.quest_manager.complete_objective("utiliser votre mémoire ou le beamer")  # valide la quête finale
 
     
+=======
+>>>>>>> origin/main
     def get_inventory(self):
         """
         Affiche le contenu de l'inventaire du joueur.
@@ -166,6 +192,7 @@ class Player():
         return result
     
     def current_weight(self):
+<<<<<<< HEAD
         return sum(item.weight for item in self.inventory.values())
     
 
@@ -223,3 +250,6 @@ class Player():
             for reward in self.rewards:
                 print(f"  • {reward}")
             print()
+=======
+        return sum(item.weight for item in self.inventory.values())
+>>>>>>> origin/main
