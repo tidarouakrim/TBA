@@ -21,6 +21,8 @@ class Quest:
         self.is_active = True
         print(f"\nNouvelle quête activée: {self.title}")
         print(f"{self.description}\n")
+        if self.reward:
+            print(f"Récompense : {self.reward}\n")
 
     def complete_objective(self, objective, player=None):
         if objective in self.objectives and objective not in self.completed_objectives:

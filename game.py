@@ -59,8 +59,7 @@ class Game:
         self.commands["give"] = give
         mot_command = Command("mot", "<le_mot> : entrer le mot secret", Actions.check_secret_word, -1)
         self.commands["mot"] = mot_command
-        repondre_cmd = Command("repondre", "<réponse>", Actions.repondre, -1)
-        self.commands["repondre"] = repondre_cmd
+    
 
          # Setup rooms
         gare = Room("gare", " la gare de départ de l’Orient Express, entouré de voyageurs élégants et de valises en cuir.")
@@ -125,8 +124,7 @@ class Game:
         for room in self.rooms:
             self.direction.update(room.exits.keys())
 
-        # === OBJETS ET PERSONNAGES ===
-        # Première classe - COUSSIN + CLÉ CACHÉE SOUS LE COUSSIN
+
         
         coffre = Item("coffre", "Un coffre ancien et verrouillé", 5)
         tapis = Item("tapis", "Un petit tapis fin et coloré", 1)
@@ -359,9 +357,6 @@ class Game:
         print("Entrez 'help' si vous avez besoin d'aide.")
         #
         print(self.player.current_room.get_long_description())
-
-
-
 
 
 def main():

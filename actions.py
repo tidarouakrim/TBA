@@ -597,6 +597,7 @@ class Actions:
                 player.quest_manager.complete_objective(
                     f"restituer {objet} à {perso}"
                 )
+            
                 return True
             else:
                 print(f"\n{perso} : \"Ce n'est pas à moi.\"\n")
@@ -657,61 +658,8 @@ class Actions:
         # Cas général : utilisation non permise
         print(f"❌ Vous ne pouvez pas utiliser {item_name} sur {target_name}.")
         return False
-            
-    @staticmethod
-    def repondre(game, args, num_params):
-        player = game.player
 
-    # Initialiser la progression si nécessaire
-        if not hasattr(player, "final_interrogation_step"):
-            player.final_interrogation_step = 0
 
-        # Chercher la quête active
-        quest = None
-        for q in player.quest_manager.active_quests:
-            if q.title == "Quête 6":
-                quest = q
-                break
-
-        if quest is None:
-            print("❌ Vous n'avez pas encore commencé cette quête.")
-            return False
-
-    # Liste des questions
-        questions = [
-            ("Où était la clé ?", "coffre"),
-            ("Quel était le plat contaminé ?", "salade"),
-            ("Quel était l’objet de Claire ?", "parapluie"),
-            ("Quel est le mot secret ?", "BRAVO")
-        ]
-
-        step = player.final_interrogation_step
-
-    # Si aucune réponse fournie, afficher la question
-        if len(args) < 2:
-            print(f"Le contrôleur : {questions[step][0]}")
-            return True
-
-        reponse = args[1].lower()
-
-    # Vérifier la réponse
-        bonne_reponse = questions[step][1]
-        if reponse == bonne_reponse:
-            print("✔️ Correct.")
-            player.final_interrogation_step += 1
-
-        # Si dernière question, compléter la quête
-            if player.final_interrogation_step == len(questions):
-                print("🎉 Le contrôleur sourit. Mission réussie ! Vous arrivez à destination.")
-                quest.complete_quest(player)
-        else:
-            print("❌ Mauvaise réponse.")
-
-    # Afficher la prochaine question si pas encore fini
-        if player.final_interrogation_step < len(questions):
-            print(f"Le contrôleur : {questions[player.final_interrogation_step][0]}")
-
-        return True
     
     @staticmethod
     def check_secret_word(game, args, num_params):

@@ -59,26 +59,25 @@ class Player():
          # Détecter la pièce spéciale pour lancer la quête
         if self.current_room.name == "piece1":
             # Activer la quête si elle n'est pas déjà active
-            self.quest_manager.activate_quest("Trouver la parure de Madame Loisel")
-            print("🔔 Quête 'Trouver la parure de Madame Loisel' activée !")
+            self.quest_manager.activate_quest("Quête 1")
+           
         if self.current_room.name == "restaurant":
             # Activer la quête si elle n'est pas déjà active
-            self.quest_manager.activate_quest("Le repas empoisonné")
-            print("🔔 Quête 'Le repas empoisonné' activée !")
-
+            self.quest_manager.activate_quest("Quête 2")
             self.poisoned_plate = "salade"
+
         if self.current_room.name == "bibliotheque":
             # Activer la quête si elle n'est pas déjà active
-            self.quest_manager.activate_quest("Mot secret")
-            print("🔔 Quête 'Mot secret' activée !")
+            self.quest_manager.activate_quest("Quête 3")
 
         if self.current_room.name == "espace_bagage":
             # Activer la quête si elle n'est pas déjà active
-            self.quest_manager.activate_quest("Trouver a qui appartient les objets perdus")
-            print("🔔 Quête 'Trouver a qui appartient les objets perdus' activée !")
+            self.quest_manager.activate_quest("Quête 4")
+            
 
         # Après avoir affiché la description de la pièce
         if self.current_room.name == "bureau_du_Maitre_du_jeu" and not self.waiting_for_final_questions:
+            self.quest_manager.activate_quest("Quête 6")
             self.waiting_for_final_questions = True
             self.ask_final_questions()
 
