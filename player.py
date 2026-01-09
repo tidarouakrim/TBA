@@ -66,13 +66,20 @@ class Player():
             self.quest_manager.activate_quest("Quête 2")
             self.poisoned_plate = "salade"
 
-        if self.current_room.name == "bibliotheque":
+        if self.current_room.name == "dortoir":
             # Activer la quête si elle n'est pas déjà active
             self.quest_manager.activate_quest("Quête 3")
+        if self.current_room.name == "lits_sortie":
+            print("\n🎉 Vous avez trouvé la sortie du labyrinthe ! Quête réussie !\n")
+            self.quest_manager.complete_objective("Trouver la sortie du labyrinthe")
+
+        if self.current_room.name == "bibliotheque":
+            # Activer la quête si elle n'est pas déjà active
+            self.quest_manager.activate_quest("Quête 4")
 
         if self.current_room.name == "espace_bagage":
             # Activer la quête si elle n'est pas déjà active
-            self.quest_manager.activate_quest("Quête 4")
+            self.quest_manager.activate_quest("Quête 5")
             
 
         # Après avoir affiché la description de la pièce
@@ -81,14 +88,7 @@ class Player():
             self.waiting_for_final_questions = True
             self.ask_final_questions()
 
-        
-        if self.current_room.name == "lits_entree":
-            self.quest_manager.activate_quest("Quête 3 : Labyrinthe des lits")
-            print("🔔 Quête activée : Trouver la sortie du labyrinthe")
 
-        if self.current_room.name == "lits_sortie":
-            print("\n🎉 Vous avez trouvé la sortie du labyrinthe ! Quête réussie !\n")
-            self.quest_manager.complete_objective("Trouver la sortie du labyrinthe")
 
         return True
 

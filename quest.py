@@ -32,6 +32,7 @@ class Quest:
                 self.complete_quest(player)
             return True
         return False
+    
 
     def complete_quest(self, player=None):
         if not self.is_completed:
@@ -42,7 +43,7 @@ class Quest:
                 if player:
                     player.add_reward(self.reward)
             print()
-
+ 
     def get_status(self):
         if not self.is_active:
             return f"{self.title} (Non activée)"
@@ -91,7 +92,6 @@ class Quest:
 
 
 
-
             
     
 class QuestManager:
@@ -103,68 +103,6 @@ class QuestManager:
         self.active_quests = []
         self.player = player
 
-    def add_quest(self, quest):
-        self.quests.append(quest)
-
-    def activate_quest(self, quest_title):
-        for quest in self.quests:
-            if quest.title == quest_title and not quest.is_active:
-                quest.activate()
-                self.active_quests.append(quest)
-                return True
-        return False
-
-    def complete_objective(self, objective_text):
-        for quest in self.active_quests:
-            if quest.complete_objective(objective_text):
-                if quest.is_completed:
-                    self.active_quests.remove(quest)
-                return True
-        return False
-
-    def check_action_objectives(self, action, target=None):
-        for quest in self.active_quests[:]:
-            quest.check_action_objective(action, target, self.player)
-            if quest.is_completed:
-                self.active_quests.remove(quest)
-
-
-
-class Quest:
-    def __init__(self, title, description, objectives=None, reward=None):
-        self.title = title
-        self.description = description
-        self.objectives = objectives or []
-        self.completed_objectives = []
-        self.is_completed = False
-        self.is_active = False
-        self.reward = reward
-
-    def activate(self):
-        self.is_active = True
-        print(f"\nNouvelle quête activée : {self.title}\n{self.description}\n")
-
-    def complete_objective(self, objective, player=None):
-        if objective in self.objectives and objective not in self.completed_objectives:
-            self.completed_objectives.append(objective)
-            print(f"Objectif accompli : {objective}")
-            if len(self.completed_objectives) == len(self.objectives):
-                self.complete_quest(player)
-            return True
-        return False
-
-    def complete_quest(self, player=None):
-        if not self.is_completed:
-            self.is_completed = True
-            print(f"\nQuête terminée : {self.title} !")
-            if self.reward and player:
-                player.add_reward(self.reward)
-
-class QuestManager:
-    def __init__(self, player=None):
-        self.quests = []
-        self.active_quests = []
-        self.player = player
 
     def add_quest(self, quest):
         self.quests.append(quest)
@@ -179,7 +117,7 @@ class QuestManager:
 
     def complete_objective(self, objective):
         for q in self.active_quests[:]:
-            if q.complete_objective(objective):
+            if q.complete_objective(objective, self.player):
                 if q.is_completed:
                     self.active_quests.remove(q)
                 return True
@@ -191,7 +129,8 @@ class QuestManager:
             if target:
                 variations += [f"{action} {target}", f"{action} sur {target}"]
             for var in variations:
-                if q.complete_objective(var):
+                if q.complete_objective(var, self.player):
+
                     if q.is_completed:
                         self.active_quests.remove(q)
                     break

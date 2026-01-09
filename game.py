@@ -25,6 +25,9 @@ class Game:
         self.player = None
         self.direction=set()
         self.direction = set()
+        self.game_won = False
+        
+
 
     def setup(self):
         # Setup commands
@@ -109,9 +112,8 @@ class Game:
         espace_bagage.exits = {"N" : None, "E" : None, "S" : None, "O" : None, "U" : bureau_du_maitre_du_Jeu, "D" : None}
         bureau_du_maitre_du_Jeu.exits = {"N" : locomotive, "E" : None, "S" : None, "O" : None, "U" : None, "D" : espace_bagage}
         locomotive.exits = {"N" : None, "E" : None, "S" : None, "O" : None,"U" : None, "D" : None}
-        quit
-        r["restaurant"].exits.update({"N": r["lits_entree"], "D": r["piece1"]})
-        r["lits_entree"].exits.update({"N": r["lits_croisement"], "S": r["restaurant"]})
+        
+        r["dortoir"].exits.update({"N": r["lits_croisement"], "S": r["restaurant"]})
         r["lits_croisement"].exits.update({"S": r["lits_entree"], "O": r["lits_impasse"], "E": r["lits_vers_biblio"], "N": r["lits_boucle"]})
         r["lits_impasse"].exits["E"] = r["lits_croisement"]
         r["lits_boucle"].exits["S"] = r["lits_croisement"]
@@ -231,7 +233,7 @@ class Game:
 
     def _setup_quests(self):
         """Initialize all quests."""
-        parure_quest = Quest(
+        quete1 = Quest(
             title="Quête 1",
             description=(
                 "Vous êtes dans le niveau bas du wagon de première classe.\n"
@@ -243,7 +245,7 @@ class Game:
         )
 
 
-        restaurant_quest = Quest(
+        quete2 = Quest(
             title="Quête 2",
             description=(
                 "Vous êtes dans le niveau haut du wagon, dans le restaurant.\n"
@@ -254,17 +256,16 @@ class Game:
             reward="repas sain et sauf"
         )
 
-        labyrinthe_quest = Quest(
+        quete3 = Quest(
             title="Quête 3",
             description=(
                 "Vous êtes dans le niveau bas du deuxieme wagon, dans le dortoir.\n"
-                "Objectif : trouver la sortie."
             ),
-            objectives=["utiliser les directions"],
+            objectives=["Trouver la sortie du labyrinthe"],
             reward="Expert en sens de l'orientation"
         )
 
-        livre_quest = Quest(
+        quete4 = Quest(
             title="Quête 4",
             description="Vous êtes dans le niveau haut du deuxieme wagon, dans la bibliotheque.\n"
             "Trouver les lettres cachées dans les livres.",
@@ -274,19 +275,19 @@ class Game:
             ],
             reward="Expert des livres"
       )
-        
-        valise_quest = Quest(
+
+        quete5 = Quest(
             title="Quête 5",
             description=(
                 "Vous êtes dans le niveau bas du troisième wagon, dans l'espace bagage.\n"
                 "les affaires sont eparpillées.\n"
-                "Objectif : trouver les affaires de chque personnages."
+                "Objectif : trouver les affaires de chaque personnages."
             ),
             objectives=["utiliser les indices"],
             reward="Expert rangement "
         )
 
-        memoire_quest = Quest(
+        quete6 = Quest(
             title="Quête 6",
             description=(
                 "Vous êtes dans le niveau haut du troisième wagon, dans le bureau du maitre du jeu.\n"
@@ -299,12 +300,12 @@ class Game:
         
 
         # Add quests to player's quest manager
-        self.player.quest_manager.add_quest(parure_quest)
-        self.player.quest_manager.add_quest(restaurant_quest)
-        self.player.quest_manager.add_quest(livre_quest)
-        self.player.quest_manager.add_quest(memoire_quest)
-        self.player.quest_manager.add_quest(valise_quest)
-        self.player.quest_manager.add_quest(labyrinthe_quest)
+        self.player.quest_manager.add_quest(quete1)
+        self.player.quest_manager.add_quest(quete2)
+        self.player.quest_manager.add_quest(quete3)
+        self.player.quest_manager.add_quest(quete4)
+        self.player.quest_manager.add_quest(quete5)
+        self.player.quest_manager.add_quest(quete6)
         
 
 
@@ -312,7 +313,6 @@ class Game:
     def play(self):
         self.setup()
         self.print_welcome()
-
 
         # Loop until the game is finished
         while not self.finished:
@@ -351,12 +351,33 @@ class Game:
             command = self.commands[command_word]
             command.action(self, list_of_words, command.number_of_parameters)
 
+            self.check_win()
+
+
     # Print the welcome message
     def print_welcome(self):
         print(f"\nBienvenue {self.player.name} prenez place : votre aventure commence à bord de l’Orient Expres !")
         print("Entrez 'help' si vous avez besoin d'aide.")
         #
         print(self.player.current_room.get_long_description())
+
+    
+    def win(self):
+    # Vérifie si la quête 6 du joueur est terminée
+        if len(self.player.quest_manager.quests) >= 6:
+            return self.player.quest_manager.quests[5].is_completed
+        return False
+
+
+    def check_win(self):
+        if self.win():
+            print("🎉 Toutes les quêtes ont été validées ! Vous avez gagné !")
+            self.finished = True  # Termine automatiquement la boucle du jeu
+            return True
+        return False
+    
+    
+
 
 
 def main():
