@@ -24,8 +24,8 @@ class Game:
         self.commands = {}
         self.player = None
         self.direction=set()
-        self.direction = set()
-        self.game_won = False
+        self.lives = 3  # Vies du joueur
+    
         
 
 
@@ -351,7 +351,18 @@ class Game:
             command = self.commands[command_word]
             command.action(self, list_of_words, command.number_of_parameters)
 
-            self.check_win()
+            # =========================
+            # Tests de fin de partie (appelés à chaque tour)
+            # =========================
+            if self.win():
+                print("🎉 Toutes les quêtes ont été validées ! Vous avez gagné !")
+                self.finished = True
+
+            elif self.loose():
+                print("\n☠️ Vous avez perdu la partie. Game Over.Le wagon se détache, vous ne pouvvez pas arriver à destination!!!\n")
+                self.finished = True
+
+
 
 
     # Print the welcome message
@@ -376,6 +387,25 @@ class Game:
             return True
         return False
     
+    def loose(self):
+        """
+        MODIF : fonction de TEST de défaite (nom imposé par l’énoncé)
+        Retourne True si les conditions de défaite sont remplies
+        """
+        if self.lives <= 0:
+            return True
+
+        return False
+
+
+    def lose_life(self, message):
+        """
+        MODIF : action simple → perdre une vie
+        """
+        self.lives -= 1
+        print(f"\n💀 {message}")
+        print(f"❤️ Vies restantes : {self.lives}\n")
+
     
 
 

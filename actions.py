@@ -89,7 +89,7 @@ class Actions:
             print(f"Direction '{direction}' non reconnue")
             print(player.current_room.get_long_description())
             return False
-
+        
         moved = game.player.move(direction)
 
         if moved:
@@ -560,7 +560,8 @@ class Actions:
 
             if plat == player.poisoned_plate:
                 print(f"\n☠️ {pnj_name} goûte le plat empoisonné et meurt ! La quête échoue.\n")
-                return True
+                game.lose_life(f"Vous avez donné le plat empoisonné au Gouteur et perdu une vie !")
+                return False
             else:
                 print(f"\n✅ {pnj_name} goûte le plat sûr et vous complétez la quête !\n")
                 player.quest_manager.complete_objective(
@@ -594,15 +595,24 @@ class Actions:
             if mapping.get(objet) == perso:
                 print(f"\n{perso} récupère son {objet} avec joie ! Merci !\n")
                 del player.inventory[objet]
-                player.quest_manager.complete_objective(
-                    f"restituer {objet} à {perso}"
-                )
-            
-                return True
+
+    # ===== MODIF QUÊTE 5 =====
+                if not hasattr(player, "bagage_corrects"):
+                    player.bagage_corrects = set()
+
+                player.bagage_corrects.add(objet)
+
+    # Si les 3 objets sont rendus → quête validée
+                if len(player.bagage_corrects) == 3:
+                    player.quest_manager.complete_objective("utiliser les indices")
+                    print("🎉 Quête 5 terminée : toutes les affaires ont été rendues !")
+
+                    return True
+
             else:
                 print(f"\n{perso} : \"Ce n'est pas à moi.\"\n")
-                return False
-
+                game.lose_life("Vous avez donné un objet au mauvais personnage et perdu une vie !")
+                return False    
     # ======================
     # CAS IMPOSSIBLE
     # ======================
@@ -641,7 +651,7 @@ class Actions:
                     game.player.quest_manager.complete_objective("utiliser clé sur coffre")
                     return True
                 else:
-                    print("❌ Il n'y a pas de coffre ici.")
+                    game.lose_life("Vous avez utilisé la clé au mauvais endroit et perdu une vie !")
                 return False
 
         # Cas 2 : Sel sur plat
@@ -657,6 +667,7 @@ class Actions:
 
         # Cas général : utilisation non permise
         print(f"❌ Vous ne pouvez pas utiliser {item_name} sur {target_name}.")
+        game.lose_life(f"Mauvaise utilisation de {item_name} sur {target_name} !")
         return False
 
 
@@ -675,7 +686,8 @@ class Actions:
                     quest.complete_objective("trouver le mot secret", game.player)
             game.player.waiting_for_secret_word = False
         else:
-            print("❌ Mot incorrect, essayez encore.")    
+            game.lose_life("Mot secret incorrect.")
+        return False    
    
    # Dictionnaire des livres et des lettres qu'ils contiennent
 books_letters = {

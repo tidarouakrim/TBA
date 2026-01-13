@@ -35,9 +35,18 @@ class Player():
         self.waiting_for_secret_word = False
         self.final_interrogation_step = 0
         self.waiting_for_final_questions = False
+        self.lives = 3
+        
+        
 
     
     def move(self, direction):
+
+        if direction not in self.current_room.exits:
+            print(f"\n❌ Impossible d'aller dans cette direction : {direction}")
+            print(self.get_history())
+            return False
+
         # Get the next room from the exits dictionary of the current room.
         next_room = self.current_room.exits[direction]
         # If the next room is None, print an error message and return False.
@@ -130,26 +139,29 @@ class Player():
         """
     # Liste des questions et réponses
         final_questions = [
-            ("Où était la clé ?", "coffre"),
             ("Quel était le repas contaminé ?", "salade"),
             ("Quel était l'objet de Claire ?", "parapluie"),
             ("Quel est le mot secret de la bibliothèque ?", "BRAVO")  # majuscules si tu veux
         ]
         print("\nLe contrôleur vous observe attentivement...")
     
+        tentatives_restantes = 3
+
         for question, correct_answer in final_questions:
             answered = False
             while not answered:
                 response = input(f"\nLe contrôleur demande : {question}\n> ").strip()
+            
             # Vérification insensible à la casse
                 if response.lower() == correct_answer.lower():
                     print("✅ Bonne réponse !")
                     answered = True
                 else:
-                    print("❌ Mauvaise réponse, essayez encore.")
+                    print("❌ Mauvaise réponse.")
 
+    # ===== AJOUT : validation de la quête finale =====
         print("\n🎉 Toutes les réponses sont correctes ! Vous avez validé la mission et arrivez enfin à destination !")
-        self.quest_manager.complete_objective("utiliser votre mémoire ou le beamer")  # valide la quête finale
+        self.quest_manager.complete_objective("utiliser votre mémoire ou le beamer")
 
     
     def get_inventory(self):
