@@ -1,21 +1,33 @@
-# game.py 
+# Description: Game class
 
 DEBUG = True
+
 from room import Room
 from player import Player
 from command import Command
 from actions import Actions
+from item import Item
+from character import Character
+from item import Beamer
+from quest import QuestManager, Quest
 from item import Item, Beamer
 from character import Character
 from quest import Quest, QuestManager
 
 class Game:
+    
+    # Constructor Import modules
+
     def __init__(self):
         self.finished = False
         self.rooms = []
         self.commands = {}
         self.player = None
-        self.direction = set()
+        self.direction=set()
+        self.lives = 3  # Vies du joueur
+    
+        
+
 
     def setup(self):
         # Setup commands
@@ -24,7 +36,7 @@ class Game:
         self.commands["help"] = help
         quit = Command("quit", " : quitter le jeu", Actions.quit, 0)
         self.commands["quit"] = quit
-        go = Command("go", " <direction> : se déplacer dans une direction cardinale (N, E, S, O, U, D)", Actions.go, 1)
+        go = Command("go", " <direction> : se déplacer dans une direction cardinale (N, E, S, O, U, D, U, D)", Actions.go, 1)
         self.commands["go"] = go
         history = Command("history", " : afficher l'historique des pièces visitées", Actions.history, 0)
         self.commands["history"] = history
@@ -50,8 +62,7 @@ class Game:
         self.commands["give"] = give
         mot_command = Command("mot", "<le_mot> : entrer le mot secret", Actions.check_secret_word, -1)
         self.commands["mot"] = mot_command
-        repondre_cmd = Command("repondre", "<réponse>", Actions.repondre, -1)
-        self.commands["repondre"] = repondre_cmd
+    
 
          # Setup rooms
         gare = Room("gare", " la gare de départ de l’Orient Express, entouré de voyageurs élégants et de valises en cuir.")
@@ -101,9 +112,8 @@ class Game:
         espace_bagage.exits = {"N" : None, "E" : None, "S" : None, "O" : None, "U" : bureau_du_maitre_du_Jeu, "D" : None}
         bureau_du_maitre_du_Jeu.exits = {"N" : locomotive, "E" : None, "S" : None, "O" : None, "U" : None, "D" : espace_bagage}
         locomotive.exits = {"N" : None, "E" : None, "S" : None, "O" : None,"U" : None, "D" : None}
-        quit
-        r["restaurant"].exits.update({"N": r["lits_entree"], "D": r["piece1"]})
-        r["lits_entree"].exits.update({"N": r["lits_croisement"], "S": r["restaurant"]})
+        
+        r["dortoir"].exits.update({"N": r["lits_croisement"], "S": r["restaurant"]})
         r["lits_croisement"].exits.update({"S": r["lits_entree"], "O": r["lits_impasse"], "E": r["lits_vers_biblio"], "N": r["lits_boucle"]})
         r["lits_impasse"].exits["E"] = r["lits_croisement"]
         r["lits_boucle"].exits["S"] = r["lits_croisement"]
@@ -116,8 +126,7 @@ class Game:
         for room in self.rooms:
             self.direction.update(room.exits.keys())
 
-        # === OBJETS ET PERSONNAGES ===
-        # Première classe - COUSSIN + CLÉ CACHÉE SOUS LE COUSSIN
+
         
         coffre = Item("coffre", "Un coffre ancien et verrouillé", 5)
         tapis = Item("tapis", "Un petit tapis fin et coloré", 1)
@@ -214,18 +223,6 @@ class Game:
         self.player = Player(input("\nEntrez votre nom: "))
         self.player.current_room = gare
         self._setup_quests()
-        quest1 = Quest(
-            title = "Quête 1",
-            description = (
-                "Vous êtes dans le niveau bas du wagon de première classe.\n"
-                "Madame Loisel a perdu sa parure.\n"
-                "Objectif : utiliser la clé sur le coffre pour la retrouver."
-            ),
-            objectives = [
-                "utiliser clé sur coffre"
-            ],
-            reward = "Parure de Madame Loisel récupérée")
-        self.player.quest_manager.add_quest(quest1)
 
 
         # Renseigner toutes les directions utilisées
@@ -236,7 +233,7 @@ class Game:
 
     def _setup_quests(self):
         """Initialize all quests."""
-        parure_quest = Quest(
+        quete1 = Quest(
             title="Quête 1",
             description=(
                 "Vous êtes dans le niveau bas du wagon de première classe.\n"
@@ -248,7 +245,7 @@ class Game:
         )
 
 
-        restaurant_quest = Quest(
+        quete2 = Quest(
             title="Quête 2",
             description=(
                 "Vous êtes dans le niveau haut du wagon, dans le restaurant.\n"
@@ -259,17 +256,16 @@ class Game:
             reward="repas sain et sauf"
         )
 
-        labyrinthe_quest = Quest(
+        quete3 = Quest(
             title="Quête 3",
             description=(
                 "Vous êtes dans le niveau bas du deuxieme wagon, dans le dortoir.\n"
-                "Objectif : trouver la sortie."
             ),
-            objectives=["utiliser les directions"],
+            objectives=["Trouver la sortie du labyrinthe"],
             reward="Expert en sens de l'orientation"
         )
 
-        livre_quest = Quest(
+        quete4 = Quest(
             title="Quête 4",
             description="Vous êtes dans le niveau haut du deuxieme wagon, dans la bibliotheque.\n"
             "Trouver les lettres cachées dans les livres.",
@@ -279,19 +275,19 @@ class Game:
             ],
             reward="Expert des livres"
       )
-        
-        valise_quest = Quest(
+
+        quete5 = Quest(
             title="Quête 5",
             description=(
                 "Vous êtes dans le niveau bas du troisième wagon, dans l'espace bagage.\n"
                 "les affaires sont eparpillées.\n"
-                "Objectif : trouver les affaires de chque personnages."
+                "Objectif : trouver les affaires de chaque personnages."
             ),
             objectives=["utiliser les indices"],
             reward="Expert rangement "
         )
 
-        memoire_quest = Quest(
+        quete6 = Quest(
             title="Quête 6",
             description=(
                 "Vous êtes dans le niveau haut du troisième wagon, dans le bureau du maitre du jeu.\n"
@@ -304,12 +300,12 @@ class Game:
         
 
         # Add quests to player's quest manager
-        self.player.quest_manager.add_quest(parure_quest)
-        self.player.quest_manager.add_quest(restaurant_quest)
-        self.player.quest_manager.add_quest(livre_quest)
-        self.player.quest_manager.add_quest(memoire_quest)
-        self.player.quest_manager.add_quest(valise_quest)
-        self.player.quest_manager.add_quest(labyrinthe_quest)
+        self.player.quest_manager.add_quest(quete1)
+        self.player.quest_manager.add_quest(quete2)
+        self.player.quest_manager.add_quest(quete3)
+        self.player.quest_manager.add_quest(quete4)
+        self.player.quest_manager.add_quest(quete5)
+        self.player.quest_manager.add_quest(quete6)
         
 
 
@@ -332,19 +328,42 @@ class Game:
     # If the command is empty, do nothing
         if not command_string:
             return
+    # Remove leading/trailing spaces
+        command_string = command_string.strip()
 
+    # If the command is empty, do nothing
+        if not command_string:
+            return
+
+    # Split the command string into a list of words
     # Split the command string into a list of words
         list_of_words = command_string.split(" ")
 
         command_word = list_of_words[0]
 
     # If the command is not recognized, print an error message
+    # If the command is not recognized, print an error message
         if command_word not in self.commands.keys():
             print(f"\nCommande '{command_word}' non reconnue. Entrez 'help' pour voir la liste des commandes disponibles.\n")
+    # If the command is recognized, execute it
     # If the command is recognized, execute it
         else:
             command = self.commands[command_word]
             command.action(self, list_of_words, command.number_of_parameters)
+
+            # =========================
+            # Tests de fin de partie (appelés à chaque tour)
+            # =========================
+            if self.win():
+                print("🎉 Toutes les quêtes ont été validées ! Vous avez gagné !")
+                self.finished = True
+
+            elif self.loose():
+                print("\n☠️ Vous avez perdu la partie. Game Over.Le wagon se détache, vous ne pouvvez pas arriver à destination!!!\n")
+                self.finished = True
+
+
+
 
     # Print the welcome message
     def print_welcome(self):
@@ -352,6 +371,42 @@ class Game:
         print("Entrez 'help' si vous avez besoin d'aide.")
         #
         print(self.player.current_room.get_long_description())
+
+    
+    def win(self):
+    # Vérifie si la quête 6 du joueur est terminée
+        if len(self.player.quest_manager.quests) >= 6:
+            return self.player.quest_manager.quests[5].is_completed
+        return False
+
+
+    def check_win(self):
+        if self.win():
+            print("🎉 Toutes les quêtes ont été validées ! Vous avez gagné !")
+            self.finished = True  # Termine automatiquement la boucle du jeu
+            return True
+        return False
+    
+    def loose(self):
+        """
+        MODIF : fonction de TEST de défaite (nom imposé par l’énoncé)
+        Retourne True si les conditions de défaite sont remplies
+        """
+        if self.lives <= 0:
+            return True
+
+        return False
+
+
+    def lose_life(self, message):
+        """
+        MODIF : action simple → perdre une vie
+        """
+        self.lives -= 1
+        print(f"\n💀 {message}")
+        print(f"❤️ Vies restantes : {self.lives}\n")
+
+    
 
 
 

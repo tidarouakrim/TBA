@@ -6,7 +6,6 @@ class Player():
     Attributes:
         name (str) =  le nom du joueur 
         current_room (Room) =   le lieu dans lequel se trouve le joueur 
-<<<<<<< HEAD
 
     Methods:
         __init__(self, name) : The constructor.
@@ -20,21 +19,7 @@ class Player():
     none
  
     """
-=======
->>>>>>> origin/main
 
-    Methods:
-        __init__(self, name) : The constructor.
-
-    Examples:
-
-    >>> p = Player("Julie")
-    >>> p.name
-    'Julie'
-    >>> player.current_room
-    none
- 
-    """
     # Define the constructor.
     def __init__(self, name, max_weight=6):
         self.name = name
@@ -42,7 +27,6 @@ class Player():
         self.history = []
         self.inventory = {}
         self.max_weight = max_weight
-<<<<<<< HEAD
         self.quest_manager = QuestManager(self)  
         self.rewards = []
         self.move_count = 0
@@ -51,13 +35,18 @@ class Player():
         self.waiting_for_secret_word = False
         self.final_interrogation_step = 0
         self.waiting_for_final_questions = False
+        self.lives = 3
+        
+        
 
     
-=======
-        
-    # Define the move method.
->>>>>>> origin/main
     def move(self, direction):
+
+        if direction not in self.current_room.exits:
+            print(f"\n❌ Impossible d'aller dans cette direction : {direction}")
+            print(self.get_history())
+            return False
+
         # Get the next room from the exits dictionary of the current room.
         next_room = self.current_room.exits[direction]
         # If the next room is None, print an error message and return False.
@@ -72,7 +61,6 @@ class Player():
         self.current_room = next_room
         print(self.current_room.get_long_description())
         print(self.get_history())
-<<<<<<< HEAD
         # Compteur de mouvements
         self.move_count += 1
         self.quest_manager.check_action_objectives("Se déplacer", self.move_count)
@@ -80,40 +68,37 @@ class Player():
          # Détecter la pièce spéciale pour lancer la quête
         if self.current_room.name == "piece1":
             # Activer la quête si elle n'est pas déjà active
-            self.quest_manager.activate_quest("Trouver la parure de Madame Loisel")
-            print("🔔 Quête 'Trouver la parure de Madame Loisel' activée !")
+            self.quest_manager.activate_quest("Quête 1")
+           
         if self.current_room.name == "restaurant":
             # Activer la quête si elle n'est pas déjà active
-            self.quest_manager.activate_quest("Le repas empoisonné")
-            print("🔔 Quête 'Le repas empoisonné' activée !")
-
+            self.quest_manager.activate_quest("Quête 2")
             self.poisoned_plate = "salade"
-        if self.current_room.name == "bibliotheque":
+
+        if self.current_room.name == "dortoir":
             # Activer la quête si elle n'est pas déjà active
-            self.quest_manager.activate_quest("Mot secret")
-            print("🔔 Quête 'Mot secret' activée !")
-
-        if self.current_room.name == "espace_bagage":
-            # Activer la quête si elle n'est pas déjà active
-            self.quest_manager.activate_quest("Trouver a qui appartient les objets perdus")
-            print("🔔 Quête 'Trouver a qui appartient les objets perdus' activée !")
-
-        # Après avoir affiché la description de la pièce
-        if self.current_room.name == "bureau_du_Maitre_du_jeu" and not self.waiting_for_final_questions:
-            self.waiting_for_final_questions = True
-            self.ask_final_questions()
-
-        
-        if self.current_room.name == "lits_entree":
-            self.quest_manager.activate_quest("Quête 3 : Labyrinthe des lits")
-            print("🔔 Quête activée : Trouver la sortie du labyrinthe")
-
+            self.quest_manager.activate_quest("Quête 3")
         if self.current_room.name == "lits_sortie":
             print("\n🎉 Vous avez trouvé la sortie du labyrinthe ! Quête réussie !\n")
             self.quest_manager.complete_objective("Trouver la sortie du labyrinthe")
 
-=======
->>>>>>> origin/main
+        if self.current_room.name == "bibliotheque":
+            # Activer la quête si elle n'est pas déjà active
+            self.quest_manager.activate_quest("Quête 4")
+
+        if self.current_room.name == "espace_bagage":
+            # Activer la quête si elle n'est pas déjà active
+            self.quest_manager.activate_quest("Quête 5")
+            
+
+        # Après avoir affiché la description de la pièce
+        if self.current_room.name == "bureau_du_Maitre_du_jeu" and not self.waiting_for_final_questions:
+            self.quest_manager.activate_quest("Quête 6")
+            self.waiting_for_final_questions = True
+            self.ask_final_questions()
+
+
+
         return True
 
     def get_history(self):
@@ -147,7 +132,6 @@ class Player():
 
         return True
     
-<<<<<<< HEAD
     def ask_final_questions(self):
         """
         Interroge le joueur sur les objets et événements des wagons précédents.
@@ -155,30 +139,31 @@ class Player():
         """
     # Liste des questions et réponses
         final_questions = [
-            ("Où était la clé ?", "coffre"),
             ("Quel était le repas contaminé ?", "salade"),
             ("Quel était l'objet de Claire ?", "parapluie"),
             ("Quel est le mot secret de la bibliothèque ?", "BRAVO")  # majuscules si tu veux
         ]
         print("\nLe contrôleur vous observe attentivement...")
     
+        tentatives_restantes = 3
+
         for question, correct_answer in final_questions:
             answered = False
             while not answered:
                 response = input(f"\nLe contrôleur demande : {question}\n> ").strip()
+            
             # Vérification insensible à la casse
                 if response.lower() == correct_answer.lower():
                     print("✅ Bonne réponse !")
                     answered = True
                 else:
-                    print("❌ Mauvaise réponse, essayez encore.")
+                    print("❌ Mauvaise réponse.")
 
+    # ===== AJOUT : validation de la quête finale =====
         print("\n🎉 Toutes les réponses sont correctes ! Vous avez validé la mission et arrivez enfin à destination !")
-        self.quest_manager.complete_objective("utiliser votre mémoire ou le beamer")  # valide la quête finale
+        self.quest_manager.complete_objective("utiliser votre mémoire ou le beamer")
 
     
-=======
->>>>>>> origin/main
     def get_inventory(self):
         """
         Affiche le contenu de l'inventaire du joueur.
@@ -192,7 +177,6 @@ class Player():
         return result
     
     def current_weight(self):
-<<<<<<< HEAD
         return sum(item.weight for item in self.inventory.values())
     
 
@@ -250,6 +234,3 @@ class Player():
             for reward in self.rewards:
                 print(f"  • {reward}")
             print()
-=======
-        return sum(item.weight for item in self.inventory.values())
->>>>>>> origin/main

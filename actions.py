@@ -48,6 +48,14 @@ class Actions:
 
         """
         direction_map = {
+            "N": "N", "NORD": "N",
+            "S": "S", "SUD": "S",
+            "E": "E", "EST": "E",
+            "O": "O", "OUEST": "O",
+            "U": "U", "UP": "U",
+            "D": "D", "DOWN": "D"
+        }
+        direction_map = {
         "N": "N", "NORD": "N",
         "S": "S", "SUD": "S",
         "E": "E", "EST": "E",
@@ -81,7 +89,7 @@ class Actions:
             print(f"Direction '{direction}' non reconnue")
             print(player.current_room.get_long_description())
             return False
-
+        
         moved = game.player.move(direction)
 
         if moved:
@@ -327,3 +335,392 @@ class Actions:
         pnj_name = room.characters[pnj_name]
         pnj_name.get_msg()
         return True
+
+    @staticmethod
+    def quests(game, list_of_words, number_of_parameters):
+        """
+        Show all quests and their status.
+        
+        Args:
+            game (Game): The game object.
+            list_of_words (list): The list of words in the command.
+            number_of_parameters (int): The number of parameters expected by the command.
+
+        Returns:
+            bool: True if the command was executed successfully, False otherwise.
+
+        Examples:
+
+        >>> from game import Game
+        >>> game = Game()
+        >>> game.setup("TestPlayer")
+        >>> Actions.quests(game, ["quests"], 0)
+        <BLANKLINE>
+        📋 Liste des quêtes:
+          ❓ Grand Explorateur (Non activée)
+          ❓ Grand Voyageur (Non activée)
+          ❓ Découvreur de Secrets (Non activée)
+        <BLANKLINE>
+        True
+        >>> Actions.quests(game, ["quests", "param"], 0)
+        <BLANKLINE>
+        La commande 'quests' ne prend pas de paramètre.
+        <BLANKLINE>
+        False
+
+        """
+        # If the number of parameters is incorrect, print an error message and return False.
+        n = len(list_of_words)
+        if n != number_of_parameters + 1:
+            command_word = list_of_words[0]
+            print(MSG0.format(command_word=command_word))
+            return False
+
+        # Show all quests
+        game.player.quest_manager.show_quests()
+        return True
+
+
+    @staticmethod
+    def quest(game, list_of_words, number_of_parameters):
+        """
+        Show details about a specific quest.
+        
+        Args:
+            game (Game): The game object.
+            list_of_words (list): The list of words in the command.
+            number_of_parameters (int): The number of parameters expected by the command.
+
+        Returns:
+            bool: True if the command was executed successfully, False otherwise.
+
+        Examples:
+
+        >>> from game import Game
+        >>> game = Game()
+        >>> game.setup("TestPlayer")
+        >>> Actions.quest(game, ["quest", "Grand", "Voyageur"], 1)
+        <BLANKLINE>
+        📋 Quête: Grand Voyageur
+        📖 Déplacez-vous 10 fois entre les lieux.
+        <BLANKLINE>
+        Objectifs:
+          ⬜ Se déplacer 10 fois (Progression: 0/10)
+        <BLANKLINE>
+        🎁 Récompense: Bottes de voyageur
+        <BLANKLINE>
+        True
+        >>> Actions.quest(game, ["quest"], 1)
+        <BLANKLINE>
+        La commande 'quest' prend 1 seul paramètre.
+        <BLANKLINE>
+        False
+
+        """
+        # If the number of parameters is incorrect, print an error message and return False.
+        n = len(list_of_words)
+        if n < number_of_parameters + 1:
+            command_word = list_of_words[0]
+            print(MSG1.format(command_word=command_word))
+            return False
+
+        # Get the quest title from the list of words (join all words after command)
+        quest_title = " ".join(list_of_words[1:])
+
+        # Prepare current counter values to show progress
+        current_counts = {
+            "Se déplacer": game.player.move_count
+        }
+
+        # Show quest details
+        game.player.quest_manager.show_quest_details(quest_title, current_counts)
+        return True
+
+
+    @staticmethod
+    def activate(game, list_of_words, number_of_parameters):
+        """
+        Activate a specific quest.
+        
+        Args:
+            game (Game): The game object.
+            list_of_words (list): The list of words in the command.
+            number_of_parameters (int): The number of parameters expected by the command.
+
+        Returns:
+            bool: True if the command was executed successfully, False otherwise.
+
+        Examples:
+
+        >>> from game import Game
+        >>> game = Game()
+        >>> game.setup("TestPlayer")
+        >>> Actions.activate(game, ["activate", "Grand", "Voyageur"], 1) # doctest: +ELLIPSIS
+        <BLANKLINE>
+        🗡️  Nouvelle quête activée: Grand Voyageur
+        📝 Déplacez-vous 10 fois entre les lieux.
+        <BLANKLINE>
+        True
+        >>> Actions.activate(game, ["activate"], 1)
+        <BLANKLINE>
+        La commande 'activate' prend 1 seul paramètre.
+        <BLANKLINE>
+        False
+
+        """
+        # If the number of parameters is incorrect, print an error message and return False.
+        n = len(list_of_words)
+        if n < number_of_parameters + 1:
+            command_word = list_of_words[0]
+            print(MSG1.format(command_word=command_word))
+            return False
+
+        # Get the quest title from the list of words (join all words after command)
+        quest_title = " ".join(list_of_words[1:])
+
+        # Try to activate the quest
+        if game.player.quest_manager.activate_quest(quest_title):
+            return True
+
+        msg1 = f"\nImpossible d'activer la quête '{quest_title}'. "
+        msg2 = "Vérifiez le nom ou si elle n'est pas déjà active.\n"
+        print(msg1 + msg2)
+        # print(f"\nImpossible d'activer la quête '{quest_title}'. \
+        #             Vérifiez le nom ou si elle n'est pas déjà active.\n")
+        return False
+
+
+    @staticmethod
+    def rewards(game, list_of_words, number_of_parameters):
+        """
+        Display all rewards earned by the player.
+        
+        Args:
+            game (Game): The game object.
+            list_of_words (list): The list of words in the command.
+            number_of_parameters (int): The number of parameters expected by the command.
+
+        Returns:
+            bool: True if the command was executed successfully, False otherwise.
+
+        Examples:
+
+        >>> from game import Game
+        >>> game = Game()
+        >>> game.setup("TestPlayer")
+        >>> Actions.rewards(game, ["rewards"], 0)
+        <BLANKLINE>
+        🎁 Aucune récompense obtenue pour le moment.
+        <BLANKLINE>
+        True
+        >>> Actions.rewards(game, ["rewards", "param"], 0)
+        <BLANKLINE>
+        La commande 'rewards' ne prend pas de paramètre.
+        <BLANKLINE>
+        False
+        """
+        # If the number of parameters is incorrect, print an error message and return False.
+        n = len(list_of_words)
+        if n != number_of_parameters + 1:
+            command_word = list_of_words[0]
+            print(MSG0.format(command_word=command_word))
+            return False
+
+        # Show all rewards
+        game.player.show_rewards()
+        return True
+
+
+    @staticmethod
+    def give(game, list_of_words, number_of_parameters):
+        """
+        Donner un objet ou un plat à un PNJ.
+        Syntaxes :
+          - give <plat> <PNJ>          (dans le restaurant)
+          - give <objet> to <PNJ>      (dans l'espace bagage)
+        """
+        player = game.player
+        room = player.current_room
+
+    # Vérification nombre de paramètres
+        if len(list_of_words) < 2:
+            print("\nLa commande 'donner' prend au moins 1 paramètre.\n")
+            return False
+
+    # ======================
+    # CAS RESTAURANT
+    # ======================
+        if room.name == "restaurant":
+            if len(list_of_words) < 3:
+                print("\nUsage : give <plat> <PNJ>\n")
+                return False
+
+            plat = list_of_words[1].lower()
+            pnj_name = list_of_words[2].title()
+
+            if plat == player.poisoned_plate:
+                print(f"\n☠️ {pnj_name} goûte le plat empoisonné et meurt ! La quête échoue.\n")
+                game.lose_life(f"Vous avez donné le plat empoisonné au Gouteur et perdu une vie !")
+                return False
+            else:
+                print(f"\n✅ {pnj_name} goûte le plat sûr et vous complétez la quête !\n")
+                player.quest_manager.complete_objective(
+                    "Donner le plat sûr au PNJ"
+                )
+                return True
+
+    # ======================
+    # CAS ESPACE BAGAGE
+    # ======================
+        elif room.name == "espace_bagage":
+            if len(list_of_words) < 4 or "to" not in list_of_words:
+                print("\nUsage : give <objet> to <personnage>\n")
+                return False
+
+            to_idx = list_of_words.index("to")
+            objet = " ".join(list_of_words[1:to_idx]).lower()
+            perso = " ".join(list_of_words[to_idx+1:]).title()
+
+            if objet not in player.inventory:
+                print(f"\nVous n'avez pas {objet}.\n")
+                return False
+
+            if perso not in room.characters:
+                print(f"\n{perso} n'est pas ici.\n")
+                return False
+
+        # Vérification correspondance objet → personnage
+            mapping = {"montre": "Paul", "parapluie": "Claire", "lettre": "Henri"}
+
+            if mapping.get(objet) == perso:
+                print(f"\n{perso} récupère son {objet} avec joie ! Merci !\n")
+                del player.inventory[objet]
+
+    # ===== MODIF QUÊTE 5 =====
+                if not hasattr(player, "bagage_corrects"):
+                    player.bagage_corrects = set()
+
+                player.bagage_corrects.add(objet)
+
+    # Si les 3 objets sont rendus → quête validée
+                if len(player.bagage_corrects) == 3:
+                    player.quest_manager.complete_objective("utiliser les indices")
+                    print("🎉 Quête 5 terminée : toutes les affaires ont été rendues !")
+
+                    return True
+
+            else:
+                print(f"\n{perso} : \"Ce n'est pas à moi.\"\n")
+                game.lose_life("Vous avez donné un objet au mauvais personnage et perdu une vie !")
+                return False    
+    # ======================
+    # CAS IMPOSSIBLE
+    # ======================
+        else:
+            print("\nImpossible de donner quelque chose ici.\n")
+            return False
+
+
+        
+
+    @staticmethod
+    def use(game, args, _):
+        """
+        Utiliser un objet sur une cible ou un plat.
+        Syntaxe : use <objet> <cible/plat>
+        """
+        item_name = args[1].lower()
+        room = game.player.current_room
+
+
+        # Cas livre
+        if item_name.startswith("livre"): 
+            if item_name not in room.inventory: 
+                print("Ce livre n'est pas ici.\n") 
+                return True
+            use_book(game, item_name)
+            return True
+        target_name = " ".join(args[2:]).lower() 
+        room = game.player.current_room
+
+        # Cas 1 : Clé sur coffre
+        if item_name == "clé" and target_name == "coffre":
+                if "coffre" in room.inventory:
+                    print("✅ Coffre ouvert ! Parure retrouvée !")
+                    del room.inventory["coffre"]
+                    game.player.quest_manager.complete_objective("utiliser clé sur coffre")
+                    return True
+                else:
+                    game.lose_life("Vous avez utilisé la clé au mauvais endroit et perdu une vie !")
+                return False
+
+        # Cas 2 : Sel sur plat
+        if item_name == "sel":
+            if target_name == game.player.poisoned_plate:
+                print(f"\nLe {target_name} change légèrement de couleur ! C’est le plat empoisonné.\n")
+                game.player.quest_manager.complete_objective("Saupoudrer le sel sur le plat empoisonné")
+                game.player.quest_manager.complete_objective("Identifier le plat empoisonné")
+            else:
+                print(f"\nLe {target_name} ne réagit pas au sel.\n")
+            return True
+        
+
+        # Cas général : utilisation non permise
+        print(f"❌ Vous ne pouvez pas utiliser {item_name} sur {target_name}.")
+        game.lose_life(f"Mauvaise utilisation de {item_name} sur {target_name} !")
+        return False
+
+
+    
+    @staticmethod
+    def check_secret_word(game, args, num_params):
+        if len(args) < 2:
+            print("\nVous devez entrer un mot après la commande 'mot'.\n")
+            return False
+
+        mot = args[1].strip().upper()  # récupère le mot tapé après "mot"
+        if mot == "BRAVO":
+            print("✅ Mot correct ! Quête terminée.")
+            for quest in game.player.quest_manager.active_quests:
+                if quest.title == "Mot secret":
+                    quest.complete_objective("trouver le mot secret", game.player)
+            game.player.waiting_for_secret_word = False
+        else:
+            game.lose_life("Mot secret incorrect.")
+        return False    
+   
+   # Dictionnaire des livres et des lettres qu'ils contiennent
+books_letters = {
+    "livre1": None,
+    "livre2": "A",
+    "livre3": "V",
+    "livre4": "O",
+    "livre5": "B",
+    "livre6": "R",
+}
+
+
+def use_book(game, item_name):
+    item_name = item_name.lower()
+    
+    if item_name not in books_letters:
+        print(f"Le livre {item_name} n'existe pas.\n")
+        return
+
+    letter = books_letters[item_name]
+    
+    if letter is None:
+        print("Aucune lettre trouvée.\n")
+    else:
+        if letter not in game.player.found_letters:
+            game.player.found_letters.append(letter)
+            print(f"Lettre {letter} enregistrée.\n")
+        else:
+            print(f"Lettre {letter} déjà enregistrée.\n")
+    
+    # Vérifier si toutes les lettres ont été trouvées
+    all_letters = [l for l in books_letters.values() if l is not None]
+    if set(game.player.found_letters) == set(all_letters):
+        print("Toutes les lettres ont été enregistrées.")
+        print("Veuillez trouver le mot secret.\n")
+
