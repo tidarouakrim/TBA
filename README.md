@@ -1,75 +1,147 @@
-# TBA - Jeu d'Aventure Textuel avec Système de Quêtes
+# Orient Express – Projet TBA
 
-Cette branche contient une version du jeu d'aventure TBA (Text-Based Adventure) avec un système de quêtes intégré.
+**Jeu d'aventure textuel** inspiré de l'Orient Express  
+**Auteurs** :** Tidar Ouakrim & Aminata Dabo
+**Année** : 2025-2026
 
-## Description
+## Contexte général du projet
 
-TBA est un jeu d'aventure textuel où le joueur explore différents lieux et accomplit des quêtes via des commandes textuelles.
+Le joueur arrive à la **gare de départ** de l’Orient Express et doit traverser un train luxueux pour arriver à sa **destination finale** (la locomotive).  
+Le train est composé de plusieurs lieux successifs. Chaque lieu contient un défi à réussir.  
+**En cas d'échec **, le train se détache et le joueur perd la partie (mécanique des 3 vies).
 
-**État actuel du projet (branche `tba-quests`) :**
-- 6 lieux explorables
-- Navigation par directions cardinales (N, E, S, O)
-- **Système de quêtes complet** avec objectifs et récompenses
-- Gestion des quêtes actives et complétées
-- Suivi automatique de la progression des objectifs
-- Statistiques de déplacement du joueur
+## L'univers du jeu
 
-Cette version introduit un système de quêtes qui enrichit considérablement l'expérience de jeu et sert de base pour des mécaniques plus complexes.
+Le joueur traverse **7 lieux** dans cet ordre précis :
 
-## Lancement du jeu
+1. **Gare de départ**
+2. **Première Classe**
+3. **Restaurant**
+4. **Lits** (labyrinthe)
+5. **Bibliothèque**
+6. **Espace Bagagiste**
+7. **Bureau du Contrôleur** → **Locomotive** (fin)
 
-Pour démarrer le jeu, exécuter simplement :
-```bash
-python game.py
-```
+## Description détaillée des lieux
 
-## Commandes disponibles
+### 1. Gare de départ
+Le joueur commence ici, entouré de voyageurs élégants et de valises en cuir.  
+Il monte dans le train vers la Première Classe.
 
-### Commandes de base
-- `help` : Afficher l'aide et la liste des commandes
-- `quit` : Quitter le jeu
-- `go <direction>` : Se déplacer dans une direction (N, E, S, O)
+### 2. Première Classe
+Le joueur entre dans le niveau bas de première classe, luxueusement décoré avec des sièges en velours, des tables basses et des lampes dorées.  
+**Objectif** : retrouver la parure de Madame Loisel, cachée dans un coffre verrouillé.
 
-### Commandes de quêtes
-- `quests` : Afficher la liste de toutes les quêtes disponibles
-- `quest <titre>` : Afficher les détails d'une quête spécifique
-- `activate <titre>` : Activer une quête pour commencer à la suivre
+Objets présents :
+- Un coffre fermé
+- Un petit tapis
+- Une lampe posée sur une table
+- Un livre ouvert sur un siège
+- **Une clé en cuivre** 
+- Une petite note mystérieuse
 
-## Système de Quêtes
+**Indice** : Madame Loisel est présente et dit :
+> "Quelque chose d’important se cache sous ce qui est doux et moelleux."
 
-Le système de quêtes permet de :
-- Définir des objectifs à accomplir
-- Suivre automatiquement la progression
-- Gérer plusieurs quêtes simultanément
-- Obtenir des récompenses à la completion
+**Solution** : `use clé coffre`
 
-**Types d'objectifs disponibles :**
-- Objectifs de visite : visiter un lieu spécifique
-- Objectifs de compteur : effectuer une action un certain nombre de fois (ex: se déplacer 10 fois)
+### 3. Restaurant
+Le joueur entre dans le restaurant somptueux du niveau haut, nappes blanches et lumières tamisées.  
+**Défi** : identifier quel repas est empoisonné.
 
-## Structuration
+Le goûteur du train est chargé de vérifier la sécurité des plats.  
+Trois plats sont servis :
+1. Le ragoût de bœuf
+2. La salade forestière
+3. Le gratin de légumes
 
-Le projet est organisé en 6 modules contenant chacun une ou plusieurs classes :
+**Un seul est empoisonné.**  
+Objets utiles autour :
+- Fourchette, couteau, assiette vide
+- Carafe d’eau
+- Serviette
+- Livre de recettes
+- **Sel** (seul objet utile)
 
-### Modules principaux
+**Indice** : le sel réagit spécial au contact de certains champignons toxiques.  
+En saupoudrant le sel sur les plats, un seul change légèrement de couleur.
 
-- **`game.py` / `Game`** : Gestion de l'état du jeu, de l'environnement et de l'interface avec le joueur
-- **`room.py` / `Room`** : Propriétés génériques d'un lieu (nom, description, sorties)
-- **`player.py` / `Player`** : Représentation du joueur avec gestion des déplacements et intégration du QuestManager
-- **`command.py` / `Command`** : Structure des commandes avec leurs paramètres et actions associées
-- **`actions.py` / `Actions`** : Méthodes statiques définissant toutes les actions exécutables (déplacements, gestion des quêtes, etc.)
-- **`quest.py`** : 
-  - `Quest` : Représentation d'une quête avec ses objectifs
-  - `Objective` : Classe de base pour les objectifs
-  - `RoomObjective` : Objectif de visite d'un lieu
-  - `CounterObjective` : Objectif basé sur un compteur
-  - `QuestManager` : Gestionnaire des quêtes du joueur
+**Solution** : `use sel [plat]` → identifier le poison → `give [plat sûr]` au goûteur.
 
-## Architecture
+### 4. Lits (labyrinthe)
+Le joueur entre dans le niveau bas du wagon-lits. Les lits sont empilés de manière chaotique, formant un labyrinthe.  
+**Objectif** : trouver la sortie pour avancer à l’épreuve suivante.
 
-Le jeu utilise une architecture orientée objet avec gestion d'événements :
+Le labyrinthe est moyennement compliqué avec :
+- Une impasse
+- Une petite boucle
+- Indices subtils dans les descriptions (ronflements, matelas déchiré, odeur de vieux papier, lumière chaude…)
 
-1. **Game** initialise le jeu et les quêtes disponibles
-2. **Player** contient un `QuestManager` qui suit les quêtes actives
-3. **QuestManager** vérifie automatiquement la progression lors des actions du joueur
-4. **Objectives** définissent différents types de conditions à remplir
+**Solution** : explorer en suivant les indices  (ex : odeur de vieux papier = direction bibliothèque).
+
+### 5. Bibliothèque
+Le joueur entre dans la bibliothèque calme et silencieuse du niveau haut.  
+Rangées de livres anciens, petites lampes tamisées, un bibliothécaire supervise.
+
+**Objectif** : trouver le mot secret en utilisant les lettres majuscules cachées dans certains titres de livres.
+
+Quand le joueur touche un livre avec une majuscule dans le titre :
+> "Lettre [X] enregistrée"
+
+Quand toutes les lettres sont trouvées :
+> "Toutes les lettres sont enregistrées. Veuillez former le mot secret."
+
+**Indice du bibliothécaire** :
+> "Vous remarquez qu’une lettre est plus prononcée ou inhabituelle dans certains titres."
+
+**Solution** : `use livreX` → mot secret = "BRAVO" → `mot bravo`
+
+### 6. Espace Bagagiste
+Le joueur entre dans l’espace bagage rempli de valises, sacs et coffres.  
+**Objectif** : restituer trois objets perdus à leurs propriétaires légitimes.
+
+Objets à restituer :
+- Montre → Paul
+- Parapluie → Claire
+- Lettre → Henri
+
+**Indices subtils** via `talk` :
+- Paul : "Je ne pars jamais sans vérifier l’heure..."
+- Claire : "J’aime que mes affaires restent sèches."
+- Henri : "Je n’oublie jamais mes messages, ils contiennent des secrets importants."
+
+**Solution** : `give montre Paul`, `give parapluie Claire`, `give lettre Henri`
+
+### 7. Bureau du Contrôleur → Locomotive (fin)
+**Défi final** : le contrôleur interroge le joueur sur tout ce qu’il a fait dans les lieux précédents.
+
+Questions :
+- Où était la clé ?
+- Quel plat était empoisonné ?
+- Quel objet appartient à Claire ?
+- Quel est le mot secret ?
+
+**Solution** : répondre aux questions (commande adaptée selon votre implémentation).
+
+En cas de réussite : arrivée à la locomotive → victoire !
+
+## Mécaniques spéciales
+- **3 vies** : en cas d’échec majeur (plat empoisonné, mauvais give, trop de mauvaises réponses, etc.) → perte d’une vie
+- **0 vie** → défaite immédiate : "Le train s’est détaché... Vous n’arrivez pas à destination."
+- **Victoire** : quand la quête 6 est réussie → "Toutes les quêtes validées ! Vous avez gagné !"
+
+## Commandes principales (version actuelle)
+- `help` → liste des commandes
+- `quit` → quitter
+- `go <direction>` (N/S/E/O/U/D)
+- `look` → description + objets
+- `take <objet>`
+- `use <objet> <cible>` (ex : `use clé coffre`)
+- `give <objet> <personnage>` (ex : `give montre Paul`)
+- `talk <personnage>`
+- `mot <mot_secret>`
+- `quests` → liste des quêtes
+- `quest <titre>` → détails d’une quête
+- `activate <titre>` → activer une quête
+
+Bon jeu et bon voyage dans l’Orient Express ! 
