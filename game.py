@@ -81,7 +81,14 @@ class Game:
         self.rooms.append(bureau_du_maitre_du_Jeu)
         locomotive = Room("locomotive", " la locomotive! Félicitations vous arrivez à votre destination ! Bon voyage...")
         self.rooms.append(locomotive)
-        
+
+                # Association des quetes aux pièces
+        piece1.quest_title = "Quête 1"
+        restaurant.quest_title = "Quête 2"
+        dortoir.quest_title = "Quête 3"
+        bibliotheque.quest_title = "Quête 4"
+        espace_bagage.quest_title = "Quête 5"
+        bureau_du_maitre_du_Jeu.quest_title = "Quête 6"        
         # Labyrinthe
         lits_entree = Room("lits_entree", "à l’entrée du niveau bas du deuxième wagon. Les lits sont empilés de manière chaotique, formant des passages étroits. Une faible lumière filtre depuis le sud.")
         self.rooms.append(lits_entree)
@@ -347,18 +354,29 @@ class Game:
             print(f"\nCommande '{command_word}' non reconnue. Entrez 'help' pour voir la liste des commandes disponibles.\n")
     # If the command is recognized, execute it
     # If the command is recognized, execute it
-        else:
-            command = self.commands[command_word]
-            command.action(self, list_of_words, command.number_of_parameters)
+        # ---- BLOC BLOQUE GO SI QUÊTE NON FINIE ----
+        if command_word == "go":
+            current_room = self.player.current_room
+            quest = None
+            if hasattr(current_room, 'quest_title'):
+                quest_title = current_room.quest_title
+                quest = next((q for q in self.player.quest_manager.quests if q.title == quest_title), None)
+            if quest and not quest.is_completed:
+                print(f"\n🔒 Vous ne pouvez pas avancer sans terminer : {quest_title}\n")
+                print(self.player.current_room.get_long_description())
+                return
+        # -------------------------------------------
 
+        command = self.commands[command_word]
+        command.action(self, list_of_words, command.number_of_parameters)
             # =========================
             # Tests de fin de partie (appelés à chaque tour)
             # =========================
-            if self.win():
+        if self.win():
                 print("🎉 Toutes les quêtes ont été validées ! Vous avez gagné !")
                 self.finished = True
 
-            elif self.loose():
+        elif self.loose():
                 print("\n☠️ Vous avez perdu la partie. Game Over.Le wagon se détache, vous ne pouvvez pas arriver à destination!!!\n")
                 self.finished = True
 
