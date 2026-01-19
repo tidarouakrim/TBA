@@ -564,9 +564,8 @@ class Actions:
                 return False
             else:
                 print(f"\n✅ {pnj_name} goûte le plat sûr et vous complétez la quête !\n")
-                player.quest_manager.complete_objective(
-                    "Donner le plat sûr au PNJ"
-                )
+                player.quest_manager.complete_objective("utiliser le sel")
+
                 return True
 
     # ======================
@@ -605,7 +604,6 @@ class Actions:
     # Si les 3 objets sont rendus → quête validée
                 if len(player.bagage_corrects) == 3:
                     player.quest_manager.complete_objective("utiliser les indices")
-                    print("🎉 Quête 5 terminée : toutes les affaires ont été rendues !")
 
                     return True
 
@@ -671,7 +669,8 @@ class Actions:
         return False
 
 
-    
+ 
+   
     @staticmethod
     def check_secret_word(game, args, num_params):
         if len(args) < 2:
@@ -682,12 +681,11 @@ class Actions:
         if mot == "BRAVO":
             print("✅ Mot correct ! Quête terminée.")
             for quest in game.player.quest_manager.active_quests:
-                if quest.title == "Mot secret":
+                if quest.title == "Quête 4":
                     quest.complete_objective("trouver le mot secret", game.player)
             game.player.waiting_for_secret_word = False
         else:
-            game.lose_life("Mot secret incorrect.")
-        return False    
+            print("❌ Mot incorrect, essayez encore.")    
    
    # Dictionnaire des livres et des lettres qu'ils contiennent
 books_letters = {
@@ -723,4 +721,4 @@ def use_book(game, item_name):
     if set(game.player.found_letters) == set(all_letters):
         print("Toutes les lettres ont été enregistrées.")
         print("Veuillez trouver le mot secret.\n")
-
+        game.player.waiting_for_secret_word = True

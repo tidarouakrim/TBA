@@ -354,19 +354,7 @@ class Game:
             print(f"\nCommande '{command_word}' non reconnue. Entrez 'help' pour voir la liste des commandes disponibles.\n")
     # If the command is recognized, execute it
     # If the command is recognized, execute it
-        # ---- BLOC BLOQUE GO SI QUÊTE NON FINIE ----
-        if command_word == "go":
-            current_room = self.player.current_room
-            quest = None
-            if hasattr(current_room, 'quest_title'):
-                quest_title = current_room.quest_title
-                quest = next((q for q in self.player.quest_manager.quests if q.title == quest_title), None)
-            if quest and not quest.is_completed:
-                print(f"\n🔒 Vous ne pouvez pas avancer sans terminer : {quest_title}\n")
-                print(self.player.current_room.get_long_description())
-                return
-        # -------------------------------------------
-
+        
         command = self.commands[command_word]
         command.action(self, list_of_words, command.number_of_parameters)
             # =========================
