@@ -34,7 +34,7 @@ class Game:
         
 
 
-    def setup(self):
+    def setup(self, player_name=None):
         # Setup commands
 
         help = Command("help", " : afficher cette aide", Actions.help, 0)
@@ -70,21 +70,21 @@ class Game:
     
 
          # Setup rooms
-        gare = Room("gare", " la gare de départ de l’Orient Express, entouré de voyageurs élégants et de valises en cuir.")
+        gare = Room("gare", " la gare de départ de l’Orient Express, entouré de voyageurs élégants et de valises en cuir.", image="gare.png")
         self.rooms.append(gare)
-        piece1 = Room("piece1", " dans le niveau bas de première classe du premier wagon , luxueusement décoré, avec des sièges en velours, des tables basses et des lampes dorées.")
+        piece1 = Room("piece1", " dans le niveau bas de première classe du premier wagon , luxueusement décoré, avec des sièges en velours, des tables basses et des lampes dorées.", image="piece1.png")
         self.rooms.append(piece1)
-        restaurant= Room("restaurant", " le niveau haut du premier wagon, dans le restaurant somptueux, aux nappes blanches et lumières tamisées.")
+        restaurant= Room("restaurant", " le niveau haut du premier wagon, dans le restaurant somptueux, aux nappes blanches et lumières tamisées.", image="restaurant.png")
         self.rooms.append(restaurant)
-        dortoir = Room("dortoir", " le niveau bas du deuxième wagon, dans le dortoir de luxe, où les somptueux lits forment un véritable labyrinthe.")
+        dortoir = Room("dortoir", " le niveau bas du deuxième wagon, dans le dortoir de luxe, où les somptueux lits forment un véritable labyrinthe.", image="dortoir.png")
         self.rooms.append(dortoir)
-        bibliotheque = Room("bibliotheque", " le niveau haut du deuxième wagon dans la bibliothèque silencieuse, remplie de livres anciens.")
+        bibliotheque = Room("bibliotheque", " le niveau haut du deuxième wagon dans la bibliothèque silencieuse, remplie de livres anciens.", image="bibliotheque.png")
         self.rooms.append(bibliotheque)
-        espace_bagage = Room("espace_bagage", " le niveau bas du troisième wagon dans l'espace bagage, où valises et coffres s’entassent et quelques affaires traînent sur le sol.")
+        espace_bagage = Room("espace_bagage", " le niveau bas du troisième wagon dans l'espace bagage, où valises et coffres s’entassent et quelques affaires traînent sur le sol.", image="espace_bagage.png")
         self.rooms.append(espace_bagage)
-        bureau_du_maitre_du_Jeu = Room("bureau_du_Maitre_du_jeu", " le niveau haut du troisième wagon dans le bureau du Maitre du jeu , sombre et silencieux, où le contrôleur vous observe attentivement.")
+        bureau_du_maitre_du_Jeu = Room("bureau_du_Maitre_du_jeu", " le niveau haut du troisième wagon dans le bureau du Maitre du jeu , sombre et silencieux, où le contrôleur vous observe attentivement.", image="bureau_du_Maitre_du_jeu.png")
         self.rooms.append(bureau_du_maitre_du_Jeu)
-        locomotive = Room("locomotive", " la locomotive! Félicitations vous arrivez à votre destination ! Bon voyage...")
+        locomotive = Room("locomotive", " la locomotive! Félicitations vous arrivez à votre destination ! Bon voyage...", image="locomotive.png")
         self.rooms.append(locomotive)
 
                 # Association des quetes aux pièces
@@ -95,17 +95,17 @@ class Game:
         espace_bagage.quest_title = "Quête 5"
         bureau_du_maitre_du_Jeu.quest_title = "Quête 6"        
         # Labyrinthe
-        lits_entree = Room("lits_entree", "à l’entrée du niveau bas du deuxième wagon. Les lits sont empilés de manière chaotique, formant des passages étroits. Une faible lumière filtre depuis le sud.")
+        lits_entree = Room("lits_entree", "à l’entrée du niveau bas du deuxième wagon. Les lits sont empilés de manière chaotique, formant des passages étroits. Une faible lumière filtre depuis le sud.", image="lits_entree.png")
         self.rooms.append(lits_entree)
-        lits_croisement = Room("lits_croisement", "au centre du labyrinthe. Vous êtes entouré de lits superposés formant un croisement. Des ronflements lointains résonnent dans l’obscurité.")
+        lits_croisement = Room("lits_croisement", "au centre du labyrinthe. Vous êtes entouré de lits superposés formant un croisement. Des ronflements lointains résonnent dans l’obscurité.", image="lits_croisement.png")
         self.rooms.append(lits_croisement)
-        lits_impasse = Room("lits_impasse", "dans une impasse étouffante. Un mur massif de lits bloque complètement le passage ouest. L’air est lourd et oppressant ; il faut revenir en arrière.")
+        lits_impasse = Room("lits_impasse", "dans une impasse étouffante. Un mur massif de lits bloque complètement le passage ouest. L’air est lourd et oppressant ; il faut revenir en arrière.", image="lits_impasse.png")
         self.rooms.append(lits_impasse)
-        lits_boucle = Room("lits_boucle", "dans un passage qui semble tourner en rond. Vous reconnaissez un matelas déchiré que vous avez déjà vu… attention à ne pas boucler indéfiniment.")
+        lits_boucle = Room("lits_boucle", "dans un passage qui semble tourner en rond. Vous reconnaissez un matelas déchiré que vous avez déjà vu… attention à ne pas boucler indéfiniment.", image="lits_boucle.png")
         self.rooms.append(lits_boucle)
-        lits_vers_biblio = Room("lits_vers_biblio", "dans un passage qui monte légèrement. Une odeur familière de vieux papier et une lumière plus chaude proviennent du nord. C’est prometteur.")
+        lits_vers_biblio = Room("lits_vers_biblio", "dans un passage qui monte légèrement. Une odeur familière de vieux papier et une lumière plus chaude proviennent du nord. C’est prometteur.", image="lits_vers_biblio.png")
         self.rooms.append(lits_vers_biblio)
-        lits_sortie = Room("lits_sortie", "à la sortie du labyrinthe ! Vous apercevez une échelle menant vers le niveau supérieur. Vous avez réussi cette épreuve.")
+        lits_sortie = Room("lits_sortie", "à la sortie du labyrinthe ! Vous apercevez une échelle menant vers le niveau supérieur. Vous avez réussi cette épreuve.", image="lits_sortie.png")
         self.rooms.append(lits_sortie)
 
        
@@ -231,9 +231,13 @@ class Game:
             self.direction.update(room.exits.keys())
 
         # Setup player and starting room
+        if player_name and player_name.strip() != "":
+            self.player = Player(player_name.strip())
+        else:
+            self.player = Player(input("\nEntrez votre nom: ").strip())
 
-        self.player = Player(input("\nEntrez votre nom: "))
-        self.player.current_room = gare
+
+        self.player.current_room = gare 
         self._setup_quests()
 
 
