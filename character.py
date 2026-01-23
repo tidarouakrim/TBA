@@ -28,7 +28,7 @@ class Character:
             if DEBUG:
                 print(f"DEBUG: {self.name} reste dans {self.current_room.name}.")
             return False
-            
+
         # 1 chance sur 2 de ne pas bouger
         if random.choice([True, False]) is False:
             if DEBUG:
@@ -50,14 +50,14 @@ class Character:
             print(
                 f"DEBUG: {self.name} se déplace de "
                 f"{self.current_room.name} vers {new_room.name}")
-            
+
         # Déplacement réel
         del self.current_room.characters[self.name]
         new_room.characters[self.name] = self
         self.current_room = new_room
 
         return True
-    
+
     def get_msg(self):
         """
         Affiche les messages du PNJ de manière cyclique.

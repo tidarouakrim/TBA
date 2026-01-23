@@ -22,8 +22,8 @@ class Room:
     >>> room.exits
     {}
     """
-    
-    # Define the constructor. 
+
+    # Define the constructor.
     def __init__(self, name, description, image):
         self.name = name
         self.description = description
@@ -31,7 +31,7 @@ class Room:
         self.inventory = {}
         self.characters = {}
         self.image = image  # Path to image file (PNG/JPG) for this room
-    
+
     # Define the get_exit method.
     def get_exit(self, direction):
         # Return the room in the given direction if it exists.
@@ -39,10 +39,10 @@ class Room:
             return self.exits[direction]
         else:
             return None
-    
+
     # Return a string describing the room's exits.
     def get_exit_string(self):
-        exit_string = "Sorties: " 
+        exit_string = "Sorties: "
         for exit in self.exits.keys():
             if self.exits.get(exit) is not None:
                 exit_string += exit + ", "
@@ -60,7 +60,7 @@ class Room:
 
         if len(self.inventory) == 0 and len(self.characters) == 0:
             return "Il n'y a rien ici."
-        
+
         result = "on voit:\n"
 
         if len(self.inventory) > 0:
@@ -68,10 +68,10 @@ class Room:
                 result += f"    - {name} : {item.description} ({item.weight} kg)\n"
         else:
             result += "    - Aucun objet ici.\n"
-        
+
         if len(self.characters) > 0:
             for name, character in self.characters.items():
-                    result += f"    - {character}\n"
+                result += f"    - {character}\n"
         else:
             result += "    - Il n'y a personne ici.\n"
 

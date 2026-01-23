@@ -1,6 +1,7 @@
-# actions.py 
+"""Module contenant toutes les actions du joueur."""
+# actions.py
 
-from item import Item  
+from item import Item
 
 # Description: The actions module.
 
@@ -14,13 +15,17 @@ from item import Item
 # The error message is different depending on the number of parameters expected by the command.
 
 
-# The error message is stored in the MSG0 and MSG1 variables and formatted with the command_word variable, the first word in the command.
+# The error message is stored in the MSG0 and MSG1 variables
+# and formatted with the command_word
+# variable,the first word in the command.
 # The MSG0 variable is used when the command does not take any parameter.
 MSG0 = "\nLa commande '{command_word}' ne prend pas de paramètre.\n"
 # The MSG1 variable is used when the command takes 1 parameter.
 MSG1 = "\nLa commande '{command_word}' prend 1 seul paramètre.\n"
 
 class Actions:
+    """Regroupe toutes les commandes du jeu."""
+    @staticmethod
     def go(game, list_of_words, number_of_parameters):
         """
         Move the player in the direction specified by the parameter.
@@ -74,14 +79,12 @@ class Actions:
             return False
         # Get the direction from the list of words.
         input_direction = list_of_words[1].strip().upper()  #supprime les espaces ...
-
-        # Vérifier que l'entrée est dans le dictionnaire 
+        # Vérifier que l'entrée est dans le dictionnaire
         if input_direction not in direction_map:
-             print(f"Direction '{list_of_words[1]}' non reconnue")
-             print(player.current_room.get_long_description())
-             return False
+            print(f"Direction '{list_of_words[1]}' non reconnue")
+            print(player.current_room.get_long_description())
+            return False
 
-        
         direction = direction_map[input_direction]
 
         # Vérifier que c'est une direction valide
@@ -89,11 +92,11 @@ class Actions:
             print(f"Direction '{direction}' non reconnue")
             print(player.current_room.get_long_description())
             return False
-        
+
         moved = game.player.move(direction)
 
         if moved:
-            
+
             all_characters = set()
             for room in game.rooms:
                 all_characters.update(room.characters.values())
@@ -102,7 +105,7 @@ class Actions:
                 character.move()
         return moved
 
-
+    @staticmethod
     def quit(game, list_of_words, number_of_parameters):
         """
         Quit the game.
@@ -134,7 +137,7 @@ class Actions:
             command_word = list_of_words[0]
             print(MSG0.format(command_word=command_word))
             return False
-        
+
         # Set the finished attribute of the game object to True.
         player = game.player
         msg = f"\nMerci {player.name} d'avoir joué. Au revoir.\n"
@@ -142,6 +145,7 @@ class Actions:
         game.finished = True
         return True
 
+    @staticmethod
     def help(game, list_of_words, number_of_parameters):
         """
         Print the list of available commands.
@@ -174,19 +178,27 @@ class Actions:
             command_word = list_of_words[0]
             print(MSG0.format(command_word=command_word))
             return False
-        
+
         # Print the list of available commands.
         print("\nVoici les commandes disponibles:")
         for command in game.commands.values():
             print("\t- " + str(command))
         print()
         return True
-    
-   
+
+    @staticmethod
     def history(game, list_of_words, number_of_parameters):
+        """
+        Affiche l'historique des déplacements du joueur.
+        """
         print(game.player.get_history())
 
+    @staticmethod
     def back(game, list_of_words, number_of_parameters):
+        """
+        Fait revenir le joueur à la pièce précédente.
+        """
+
         if len(list_of_words) != number_of_parameters + 1:
             command_word = list_of_words[0]
             print(MSG0.format(command_word=command_word))
@@ -202,13 +214,18 @@ class Actions:
             for character in list(all_characters):
                 character.move()
         return moved
-    
+
+    @staticmethod
     def look(game, list_of_words, number_of_parameters):
+        """
+        Affiche la description complète de la pièce actuelle
+        et les objets présents.
+        """
         if len(list_of_words) != number_of_parameters + 1:
             command_word = list_of_words[0]
             print(MSG0.format(command_word=command_word))
             return False
-        
+
         # Récupérer la pièce actuelle
         room = game.player.current_room
 
@@ -219,9 +236,13 @@ class Actions:
         print(room.get_inventory())
 
         return True
-    
+
+    @staticmethod
     def take(game, list_of_words, number_of_parameters):
-         
+        """
+        Permet au joueur de ramasser un objet présent dans la pièce.
+        """
+
         item_name = list_of_words[1]
 
         room = game.player.current_room  # pièce actuelle
@@ -247,9 +268,12 @@ class Actions:
         del room.inventory[item_name]
         print(f"Vous avez pris l'objet '{item_name}'.")
         return True
-    
 
+    @staticmethod
     def drop(game, list_of_words, number_of_parameters):
+        """
+        Permet au joueur de déposer un objet présent dans son inventaire.
+        """
         if len(list_of_words) != number_of_parameters + 1:
             command_word = list_of_words[0]
             print(MSG0.format(command_word=command_word))
@@ -265,7 +289,7 @@ class Actions:
         if item_name not in game.player.inventory:
             print(f"L'objet '{item_name}' n'est pas dans l'inventaire.")
             return False
-        
+
          # Récupérer l’item
         item = game.player.inventory[item_name]
 
@@ -277,14 +301,22 @@ class Actions:
         print(f"Vous avez déposé l'objet '{item_name}'.")
 
         return True
-    
+
+    @staticmethod
     def check(game, list_of_words, number_of_parameters):
+        """
+        Affiche l'inventaire du joueur.
+        """
         # Afficher l'inventaire du joueur
         print(game.player.get_inventory())
 
         return True
-    
+
+    @staticmethod
     def beamer_charge(game, list_of_words, number_of_parameters):
+        """
+        Charge le beamer avec la position actuelle du joueur.
+        """
 
     # vérifie si joueur possède le beamer
         if "beamer" not in game.player.inventory:
@@ -297,8 +329,12 @@ class Actions:
         beamer.charged_room = game.player.current_room
         print(f" Le beamer a mémorisé : {beamer.charged_room.name}")
         return True
-    
+
+    @staticmethod
     def beamer_teleportation(game, list_of_words, number_of_parameters):
+        """
+        Téléporte le joueur vers la position mémorisée par le beamer.
+        """
         # vérifie si joueur possède le beamer
         if "beamer" not in game.player.inventory:
             print("Vous n'avez pas le beamer sur vous.")
@@ -315,9 +351,12 @@ class Actions:
         game.player.current_room = beamer.charged_room
         print(f" Téléportation vers : {beamer.charged_room.name}")
         return True
-    
 
+    @staticmethod
     def talk(game, list_of_words, number_of_parameters):
+        """
+        Permet au joueur de parler à un PNJ présent dans la pièce.
+        """
 
         if len(list_of_words) != number_of_parameters + 1:
             print(f"Usage : talk <someone>")
@@ -610,7 +649,7 @@ class Actions:
             else:
                 print(f"\n{perso} : \"Ce n'est pas à moi.\"\n")
                 game.lose_life("Vous avez donné un objet au mauvais personnage et perdu une vie !")
-                return False    
+                return False
     # ======================
     # CAS IMPOSSIBLE
     # ======================
@@ -619,7 +658,7 @@ class Actions:
             return False
 
 
-        
+
 
     @staticmethod
     def use(game, args, _):
@@ -632,36 +671,41 @@ class Actions:
 
 
         # Cas livre
-        if item_name.startswith("livre"): 
-            if item_name not in room.inventory: 
-                print("Ce livre n'est pas ici.\n") 
+        if item_name.startswith("livre"):
+            if item_name not in room.inventory:
+                print("Ce livre n'est pas ici.\n")
                 return True
             use_book(game, item_name)
             return True
-        target_name = " ".join(args[2:]).lower() 
+        target_name = " ".join(args[2:]).lower()
         room = game.player.current_room
 
         # Cas 1 : Clé sur coffre
         if item_name == "clé" and target_name == "coffre":
-                if "coffre" in room.inventory:
-                    print("✅ Coffre ouvert ! Parure retrouvée !")
-                    del room.inventory["coffre"]
-                    game.player.quest_manager.complete_objective("utiliser clé sur coffre")
-                    return True
-                else:
-                    game.lose_life("Vous avez utilisé la clé au mauvais endroit et perdu une vie !")
-                return False
+            if "coffre" in room.inventory:
+                print("✅ Coffre ouvert ! Parure retrouvée !")
+                del room.inventory["coffre"]
+                game.player.quest_manager.complete_objective("utiliser clé sur coffre")
+                return True
+            else:
+                game.lose_life("Vous avez utilisé la clé au mauvais endroit et perdu une vie !")
+            return False
 
         # Cas 2 : Sel sur plat
         if item_name == "sel":
             if target_name == game.player.poisoned_plate:
-                print(f"\nLe {target_name} change légèrement de couleur ! C’est le plat empoisonné.\n")
-                game.player.quest_manager.complete_objective("Saupoudrer le sel sur le plat empoisonné")
+                msg = (
+                    f"\nLe {target_name} change légèrement de couleur ! "
+                    "C’est le plat empoisonné.\n"
+                )
+                print(msg)
+                objective = "Saupoudrer le sel sur le plat empoisonné"
+                game.player.quest_manager.complete_objective(objective)
                 game.player.quest_manager.complete_objective("Identifier le plat empoisonné")
             else:
                 print(f"\nLe {target_name} ne réagit pas au sel.\n")
             return True
-        
+
 
         # Cas général : utilisation non permise
         print(f"❌ Vous ne pouvez pas utiliser {item_name} sur {target_name}.")
@@ -669,10 +713,13 @@ class Actions:
         return False
 
 
- 
-   
+
     @staticmethod
     def check_secret_word(game, args, num_params):
+        """
+        Vérifie le mot secret entré par le joueur
+        pour valider une quête.
+        """
         if len(args) < 2:
             print("\nVous devez entrer un mot après la commande 'mot'.\n")
             return False
@@ -685,8 +732,8 @@ class Actions:
                     quest.complete_objective("trouver le mot secret", game.player)
             game.player.waiting_for_secret_word = False
         else:
-            print("❌ Mot incorrect, essayez encore.")    
-   
+            print("❌ Mot incorrect, essayez encore.")
+
    # Dictionnaire des livres et des lettres qu'ils contiennent
 books_letters = {
     "livre1": None,
@@ -699,14 +746,17 @@ books_letters = {
 
 
 def use_book(game, item_name):
+    """
+    Permet d'utiliser un livre et d'enregistrer la lettre associée.
+    """
     item_name = item_name.lower()
-    
+
     if item_name not in books_letters:
         print(f"Le livre {item_name} n'existe pas.\n")
         return
 
     letter = books_letters[item_name]
-    
+
     if letter is None:
         print("Aucune lettre trouvée.\n")
     else:
@@ -715,7 +765,7 @@ def use_book(game, item_name):
             print(f"Lettre {letter} enregistrée.\n")
         else:
             print(f"Lettre {letter} déjà enregistrée.\n")
-    
+
     # Vérifier si toutes les lettres ont été trouvées
     all_letters = [l for l in books_letters.values() if l is not None]
     if set(game.player.found_letters) == set(all_letters):

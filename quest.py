@@ -16,7 +16,7 @@ class Quest:
         self.reward = reward
         self.secret_word = ""
         self.secret_letters = []
-        
+
     def activate(self):
         self.is_active = True
         print(f"\nNouvelle quête activée: {self.title}")
@@ -32,7 +32,7 @@ class Quest:
                 self.complete_quest(player)
             return True
         return False
-    
+
 
     def complete_quest(self, player=None):
         if not self.is_completed:
@@ -43,7 +43,7 @@ class Quest:
                 if player:
                     player.add_reward(self.reward)
             print()
- 
+
     def get_status(self):
         if not self.is_active:
             return f"{self.title} (Non activée)"
@@ -67,7 +67,7 @@ class Quest:
         for objective in objective_variations:
             if self.complete_objective(objective, player):
                 return True
-            
+
     def read_book(self, book, player):
         letter = book.check_for_uppercase()
 
@@ -92,8 +92,8 @@ class Quest:
 
 
 
-            
-    
+
+
 class QuestManager:
     """
     This class manages all quests in the game.

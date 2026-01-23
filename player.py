@@ -27,19 +27,19 @@ class Player():
         self.history = []
         self.inventory = {}
         self.max_weight = max_weight
-        self.quest_manager = QuestManager(self)  
+        self.quest_manager = QuestManager(self)
         self.rewards = []
         self.move_count = 0
-        self.poisoned_plate = None 
+        self.poisoned_plate = None
         self.found_letters = []
         self.waiting_for_secret_word = False
         self.final_interrogation_step = 0
         self.waiting_for_final_questions = False
         self.lives = 3
-        
-        
 
-    
+
+
+
     def move(self, direction):
 
         if direction not in self.current_room.exits:
@@ -69,7 +69,7 @@ class Player():
         if self.current_room.name == "piece1":
             # Activer la quête si elle n'est pas déjà active
             self.quest_manager.activate_quest("Quête 1")
-           
+
         if self.current_room.name == "restaurant":
             # Activer la quête si elle n'est pas déjà active
             self.quest_manager.activate_quest("Quête 2")
@@ -89,7 +89,7 @@ class Player():
         if self.current_room.name == "espace_bagage":
             # Activer la quête si elle n'est pas déjà active
             self.quest_manager.activate_quest("Quête 5")
-            
+
 
         # Après avoir affiché la description de la pièce
         if self.current_room.name == "bureau_du_Maitre_du_jeu" and not self.waiting_for_final_questions:
@@ -105,13 +105,13 @@ class Player():
         """
         Liste les pièces visitées.
         """
-        
+
         result = "Vous avez déja visité les pièces suivantes:\n"
         for room in self.history:
             result += f"    - {room.description}\n"
         return result
 
-   
+
     def back(self):
         """
         Revient à la pièce précédente si possible.
@@ -131,7 +131,7 @@ class Player():
         print(self.get_history())
 
         return True
-    
+
     def ask_final_questions(self):
         """
         Interroge le joueur sur les objets et événements des wagons précédents.
@@ -144,14 +144,14 @@ class Player():
             ("Quel est le mot secret de la bibliothèque ?", "BRAVO")  # majuscules si tu veux
         ]
         print("\nLe contrôleur vous observe attentivement...")
-    
+
         tentatives_restantes = 3
 
         for question, correct_answer in final_questions:
             answered = False
             while not answered:
                 response = input(f"\nLe contrôleur demande : {question}\n> ").strip()
-            
+
             # Vérification insensible à la casse
                 if response.lower() == correct_answer.lower():
                     print("✅ Bonne réponse !")
@@ -163,7 +163,7 @@ class Player():
         print("\n🎉 Toutes les réponses sont correctes ! Vous avez validé la mission et arrivez enfin à destination !")
         self.quest_manager.complete_objective("utiliser votre mémoire ou le beamer")
 
-    
+
     def get_inventory(self):
         """
         Affiche le contenu de l'inventaire du joueur.
@@ -175,10 +175,10 @@ class Player():
         for name, item in self.inventory.items():
             result += f"    - {name} : {item.description} ({item.weight} kg)\n"
         return result
-    
+
     def current_weight(self):
         return sum(item.weight for item in self.inventory.values())
-    
+
 
 
     def add_reward(self, reward):
@@ -234,3 +234,4 @@ class Player():
             for reward in self.rewards:
                 print(f"  • {reward}")
             print()
+            

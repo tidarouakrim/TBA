@@ -20,7 +20,7 @@ from character import Character
 from quest import Quest, QuestManager
 
 class Game:
-    
+
     # Constructor Import modules
 
     def __init__(self):
@@ -30,8 +30,8 @@ class Game:
         self.player = None
         self.direction=set()
         self.lives = 3  # Vies du joueur
-    
-        
+
+
 
 
     def setup(self, player_name=None):
@@ -67,7 +67,7 @@ class Game:
         self.commands["give"] = give
         mot_command = Command("mot", "<le_mot> : entrer le mot secret", Actions.check_secret_word, -1)
         self.commands["mot"] = mot_command
-    
+
 
          # Setup rooms
         gare = Room("gare", " la gare de départ de l’Orient Express, entouré de voyageurs élégants et de valises en cuir.", image="gare.png")
@@ -93,7 +93,7 @@ class Game:
         dortoir.quest_title = "Quête 3"
         bibliotheque.quest_title = "Quête 4"
         espace_bagage.quest_title = "Quête 5"
-        bureau_du_maitre_du_Jeu.quest_title = "Quête 6"        
+        bureau_du_maitre_du_Jeu.quest_title = "Quête 6"
         # Labyrinthe
         lits_entree = Room("lits_entree", "à l’entrée du niveau bas du deuxième wagon. Les lits sont empilés de manière chaotique, formant des passages étroits. Une faible lumière filtre depuis le sud.", image="lits_entree.png")
         self.rooms.append(lits_entree)
@@ -108,9 +108,9 @@ class Game:
         lits_sortie = Room("lits_sortie", "à la sortie du labyrinthe ! Vous apercevez une échelle menant vers le niveau supérieur. Vous avez réussi cette épreuve.", image="lits_sortie.png")
         self.rooms.append(lits_sortie)
 
-       
 
-        
+
+
         # === CONNEXIONS ===
         name_to_room = {r.name: r for r in self.rooms}
         r = name_to_room
@@ -124,7 +124,7 @@ class Game:
         espace_bagage.exits = {"N" : None, "E" : None, "S" : None, "O" : None, "U" : bureau_du_maitre_du_Jeu, "D" : None}
         bureau_du_maitre_du_Jeu.exits = {"N" : locomotive, "E" : None, "S" : None, "O" : None, "U" : None, "D" : espace_bagage}
         locomotive.exits = {"N" : None, "E" : None, "S" : None, "O" : None,"U" : None, "D" : None}
-        
+
         r["dortoir"].exits.update({"N": r["lits_croisement"], "S": r["restaurant"]})
         r["lits_croisement"].exits.update({"S": r["lits_entree"], "O": r["lits_impasse"], "E": r["lits_vers_biblio"], "N": r["lits_boucle"]})
         r["lits_impasse"].exits["E"] = r["lits_croisement"]
@@ -132,14 +132,14 @@ class Game:
         r["lits_vers_biblio"].exits.update({"O": r["lits_croisement"], "N": r["lits_sortie"]})
         r["lits_sortie"].exits.update({"S": r["lits_vers_biblio"], "U": r["bibliotheque"]})
 
-        
-        
+
+
 
         for room in self.rooms:
             self.direction.update(room.exits.keys())
 
 
-        
+
         coffre = Item("coffre", "Un coffre ancien et verrouillé", 5)
         tapis = Item("tapis", "Un petit tapis fin et coloré", 1)
         lampe = Item("lampe", "Une lampe posée sur une table", 2)
@@ -148,7 +148,7 @@ class Game:
         note = Item("note", "Une petite note mystérieuse", 0.05)
         MadameLoisel = Character("MadameLoisel", "Une femme élégante et mystérieuse.", piece1, ["Avez-vous vu mon collier perdu"])
             # Pas de clé au début
-        
+
 
         # Ajouter des items à wagon_restaurant
         ragout= Item("ragoût", "Un ragoût de bœuf fumant et appétissant", 1.2)
@@ -171,7 +171,7 @@ class Game:
         livre6 = Item("livre6", "poweR", 1)
         beamer= Item("beamer", "Un appareil qui permet de mémoriser des lieux.", 1)
         Bibliothécaire = Character("Bibliothécaire", "Un personnage qui garde les livres.", bibliotheque, ["Chut! Ici c'est une bibliothèque."])
-        
+
         # Ajouter des items à wagon_bagagiste
         montre = Item("montre", "descrip", 1)
         parapluie = Item("parapluie", "descrip", 1)
@@ -181,7 +181,7 @@ class Game:
         Henri = Character("Henri", "Voyageur", espace_bagage, ["Je n’oublie jamais mes messages, ils contiennent des secrets importants."])
 
         Controleur = Character("Contrôleur", "Le maître du jeu.", bureau_du_maitre_du_Jeu, ["La mémoire est quelque chose de très important dans ce train."])
-        
+
 
 
         piece1.inventory[coffre.name] = coffre
@@ -224,9 +224,9 @@ class Game:
 
         bureau_du_maitre_du_Jeu.characters[Controleur.name] = Controleur
 
-       
 
-        # Renseigner toutes les directions utilisées 
+
+        # Renseigner toutes les directions utilisées
         for room in self.rooms:
             self.direction.update(room.exits.keys())
 
@@ -237,14 +237,14 @@ class Game:
             self.player = Player(input("\nEntrez votre nom: ").strip())
 
 
-        self.player.current_room = gare 
+        self.player.current_room = gare
         self._setup_quests()
 
 
         # Renseigner toutes les directions utilisées
         for room in self.rooms:
             self.direction.update(room.exits.keys())
-            
+
 
 
     def _setup_quests(self):
@@ -313,7 +313,7 @@ class Game:
             reward="Arrive à destination"
         )
 
-        
+
 
         # Add quests to player's quest manager
         self.player.quest_manager.add_quest(quete1)
@@ -322,7 +322,7 @@ class Game:
         self.player.quest_manager.add_quest(quete4)
         self.player.quest_manager.add_quest(quete5)
         self.player.quest_manager.add_quest(quete6)
-        
+
 
 
     # Play the game
@@ -363,19 +363,19 @@ class Game:
             print(f"\nCommande '{command_word}' non reconnue. Entrez 'help' pour voir la liste des commandes disponibles.\n")
     # If the command is recognized, execute it
     # If the command is recognized, execute it
-        
+
         command = self.commands[command_word]
         command.action(self, list_of_words, command.number_of_parameters)
             # =========================
             # Tests de fin de partie (appelés à chaque tour)
             # =========================
         if self.win():
-                print("🎉 Toutes les quêtes ont été validées ! Vous avez gagné !")
-                self.finished = True
+            print("🎉 Toutes les quêtes ont été validées ! Vous avez gagné !")
+            self.finished = True
 
         elif self.loose():
-                print("\n☠️ Vous avez perdu la partie. Game Over.Le wagon se détache, vous ne pouvvez pas arriver à destination!!!\n")
-                self.finished = True
+            print("\n☠️ Vous avez perdu la partie. Game Over.Le wagon se détache, vous ne pouvvez pas arriver à destination!!!\n")
+            self.finished = True
 
 
 
@@ -387,7 +387,7 @@ class Game:
         #
         print(self.player.current_room.get_long_description())
 
-    
+
     def win(self):
     # Vérifie si la quête 6 du joueur est terminée
         if len(self.player.quest_manager.quests) >= 6:
@@ -401,7 +401,7 @@ class Game:
             self.finished = True  # Termine automatiquement la boucle du jeu
             return True
         return False
-    
+
     def loose(self):
         """
         MODIF : fonction de TEST de défaite (nom imposé par l’énoncé)
@@ -421,7 +421,7 @@ class Game:
         print(f"\n💀 {message}")
         print(f"❤️ Vies restantes : {self.lives}\n")
 
-    
+
 ##############################
 # Tkinter GUI Implementation #
 ##############################
@@ -675,7 +675,7 @@ def main():
         # Fallback to CLI if GUI fails (e.g., no DISPLAY, Tkinter not available)
         print(f"GUI indisponible ({e}). Passage en mode console.")
         Game().play()
-    
+
 
 if __name__ == "__main__":
     main()
