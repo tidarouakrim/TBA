@@ -1,8 +1,6 @@
 """Module contenant toutes les actions du joueur."""
 # actions.py
 
-from item import Item
-
 # Description: The actions module.
 
 # The actions module contains the functions that are called when a command is executed.
@@ -187,7 +185,7 @@ class Actions:
         return True
 
     @staticmethod
-    def history(game, list_of_words, number_of_parameters):
+    def history(game, _list_of_words, _number_of_parameters):
         """
         Affiche l'historique des déplacements du joueur.
         """
@@ -238,7 +236,7 @@ class Actions:
         return True
 
     @staticmethod
-    def take(game, list_of_words, number_of_parameters):
+    def take(game, list_of_words, _number_of_parameters):
         """
         Permet au joueur de ramasser un objet présent dans la pièce.
         """
@@ -303,7 +301,7 @@ class Actions:
         return True
 
     @staticmethod
-    def check(game, list_of_words, number_of_parameters):
+    def check(game, _list_of_words, _number_of_parameters):
         """
         Affiche l'inventaire du joueur.
         """
@@ -313,7 +311,7 @@ class Actions:
         return True
 
     @staticmethod
-    def beamer_charge(game, list_of_words, number_of_parameters):
+    def beamer_charge(game, _list_of_words, _number_of_parameters):
         """
         Charge le beamer avec la position actuelle du joueur.
         """
@@ -331,7 +329,7 @@ class Actions:
         return True
 
     @staticmethod
-    def beamer_teleportation(game, list_of_words, number_of_parameters):
+    def beamer_teleportation(game, _list_of_words, _number_of_parameters):
         """
         Téléporte le joueur vers la position mémorisée par le beamer.
         """
@@ -359,7 +357,7 @@ class Actions:
         """
 
         if len(list_of_words) != number_of_parameters + 1:
-            print(f"Usage : talk <someone>")
+            print("Usage : talk <someone>")
             return False
 
         pnj_name = list_of_words[1]
@@ -569,9 +567,9 @@ class Actions:
         game.player.show_rewards()
         return True
 
-
+    # pylint: disable=too-many-return-statements, too-many-branches, inconsistent-return-statements
     @staticmethod
-    def give(game, list_of_words, number_of_parameters):
+    def give(game, list_of_words, _number_of_parameters):
         """
         Donner un objet ou un plat à un PNJ.
         Syntaxes :
@@ -599,7 +597,7 @@ class Actions:
 
             if plat == player.poisoned_plate:
                 print(f"\n☠️ {pnj_name} goûte le plat empoisonné et meurt ! La quête échoue.\n")
-                game.lose_life(f"Vous avez donné le plat empoisonné au Gouteur et perdu une vie !")
+                game.lose_life("Vous avez donné le plat empoisonné au Gouteur et perdu une vie !")
                 return False
             else:
                 print(f"\n✅ {pnj_name} goûte le plat sûr et vous complétez la quête !\n")
@@ -715,7 +713,7 @@ class Actions:
 
 
     @staticmethod
-    def check_secret_word(game, args, num_params):
+    def check_secret_word(game, args, _num_params):
         """
         Vérifie le mot secret entré par le joueur
         pour valider une quête.
@@ -733,6 +731,7 @@ class Actions:
             game.player.waiting_for_secret_word = False
         else:
             print("❌ Mot incorrect, essayez encore.")
+        return True
 
    # Dictionnaire des livres et des lettres qu'ils contiennent
 books_letters = {

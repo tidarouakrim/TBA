@@ -1,8 +1,15 @@
-# This file contains the Command class.
+"""
+Module command.
 
+Définit la classe Command représentant une commande du jeu.
+"""
+
+# This file contains the Command class.
+# pylint: disable=too-few-public-methods
 class Command:
     """
-    This class represents a command. A command is composed of a command word, a help string, an action and a number of parameters.
+    This class represents a command. A command is composed of a command word
+    a help string, an action and a number of parameters.
 
     Attributes:
         command_word (str): The command word.
@@ -40,4 +47,3 @@ class Command:
     def __str__(self):
         return  self.command_word \
                 + self.help_string
-    

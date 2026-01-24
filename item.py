@@ -1,4 +1,13 @@
+"""
+Module item.
+
+Définit les objets du jeu et leurs propriétés.
+"""
+# pylint: disable=too-few-public-methods
 class Item:
+    """
+    Représente un objet manipulable dans le jeu.
+    """
 
     def __init__(self, name, description, weight):
         """
@@ -18,9 +27,17 @@ class Item:
         Exemple : sword : une épée au fil tranchant comme un rasoir (2 kg)
         """
         return f"{self.name} : {self.description} ({self.weight} kg)"
-
+# pylint: disable=too-few-public-methods
 class Beamer(Item):
-    def __init__(self, name="beamer", description="Un appareil qui permet de mémoriser des lieux.", weight=1):
+    """
+    Objet spécial permettant de mémoriser une pièce
+    et de s'y téléporter.
+    """
+    def __init__(
+        self,
+        name="beamer",
+        description="Un appareil qui permet de mémoriser des lieux.",
+        weight=1
+    ):
         super().__init__(name, description, weight)
         self.charged_room = None
-        

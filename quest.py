@@ -1,7 +1,11 @@
-from item import Item
-""" Define the Quest class"""
+"""
+Module quest.py
 
-class Quest:
+Contient la classe QuestManager et les quêtes du jeu.
+Gère l'activation, le suivi et la complétion des objectifs du joueur.
+"""
+
+class Quest: # pylint: disable=too-many-instance-attributes
     """
     This class represents a quest in the game. A quest has a title, description,
     objectives, completion status, and optional rewards.
@@ -18,6 +22,9 @@ class Quest:
         self.secret_letters = []
 
     def activate(self):
+        """
+        Active la quête.
+        """
         self.is_active = True
         print(f"\nNouvelle quête activée: {self.title}")
         print(f"{self.description}\n")
@@ -25,6 +32,9 @@ class Quest:
             print(f"Récompense : {self.reward}\n")
 
     def complete_objective(self, objective, player=None):
+        """
+        Marque un objectif comme complété s'il fait partie de la quête.
+        """
         if objective in self.objectives and objective not in self.completed_objectives:
             self.completed_objectives.append(objective)
             print(f"Objectif accompli: {objective}")
@@ -35,6 +45,9 @@ class Quest:
 
 
     def complete_quest(self, player=None):
+        """
+        Marque la quête comme complétée.
+        """
         if not self.is_completed:
             self.is_completed = True
             print(f"\nQuête terminée: {self.title}")
@@ -45,6 +58,9 @@ class Quest:
             print()
 
     def get_status(self):
+        """
+        Retourne le statut actuel de la quête.
+        """
         if not self.is_active:
             return f"{self.title} (Non activée)"
         if self.is_completed:
@@ -54,6 +70,9 @@ class Quest:
         return f"{self.title} ({completed_count}/{total_count} objectifs)"
 
     def check_action_objective(self, action, target=None, player=None):
+        """
+        Vérifie si une action correspond à un objectif de la quête.
+        """
         if target:
             objective_variations = [
                 f"{action} {target}",
@@ -69,6 +88,9 @@ class Quest:
                 return True
 
     def read_book(self, book, player):
+        """
+        Vérifie un livre pour une lettre majuscule et l'ajoute aux lettres secrètes.
+        """
         letter = book.check_for_uppercase()
 
         if letter is None:
@@ -105,9 +127,21 @@ class QuestManager:
 
 
     def add_quest(self, quest):
+        """
+        Ajoute une quête au gestionnaire de quêtes.
+        """
         self.quests.append(quest)
 
     def activate_quest(self, title):
+        """
+        Active une quête pour le joueur.
+
+        Args:
+            quest_name (str): Le nom de la quête à activer.
+
+        Returns:
+            None
+        """
         for q in self.quests:
             if q.title == title and not q.is_active:
                 q.activate()
@@ -116,6 +150,9 @@ class QuestManager:
         return False
 
     def complete_objective(self, objective):
+        """
+        Marque un objectif comme complété dans les quêtes actives.
+        """
         for q in self.active_quests[:]:
             if q.complete_objective(objective, self.player):
                 if q.is_completed:
@@ -124,6 +161,9 @@ class QuestManager:
         return False
 
     def check_action_objectives(self, action, target=None):
+        """
+        Vérifie si une action correspond à un objectif dans les quêtes actives.
+        """
         for q in self.active_quests[:]:
             variations = [action]
             if target:

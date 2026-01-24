@@ -1,3 +1,6 @@
+"""
+Module player : définit la classe Player et ses méthodes pour le jeu d'aventure.
+"""
 from quest import QuestManager
 
 class Player():
@@ -41,6 +44,9 @@ class Player():
 
 
     def move(self, direction):
+        """
+        Déplace le joueur dans une direction donnée s'il y a une sortie.
+        """
 
         if direction not in self.current_room.exits:
             print(f"\n❌ Impossible d'aller dans cette direction : {direction}")
@@ -160,7 +166,10 @@ class Player():
                     print("❌ Mauvaise réponse.")
 
     # ===== AJOUT : validation de la quête finale =====
-        print("\n🎉 Toutes les réponses sont correctes ! Vous avez validé la mission et arrivez enfin à destination !")
+        print(
+        "\n🎉 Toutes les réponses sont correctes ! "
+        "Vous avez validé la mission et arrivez enfin à destination !"
+    )
         self.quest_manager.complete_objective("utiliser votre mémoire ou le beamer")
 
 
@@ -177,6 +186,9 @@ class Player():
         return result
 
     def current_weight(self):
+        """
+        Poids total des objets dans l'inventaire.
+        """
         return sum(item.weight for item in self.inventory.values())
 
 
@@ -234,4 +246,3 @@ class Player():
             for reward in self.rewards:
                 print(f"  • {reward}")
             print()
-            

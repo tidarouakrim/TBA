@@ -1,12 +1,18 @@
+"""
+Module game.py
+
+Contient la classe Game qui gère la boucle principale du jeu, les commandes,
+le joueur, et l'interaction avec les salles et les quêtes.
+"""
 # Description: Game class
 
-DEBUG = True
 from pathlib import Path
 import sys
 
 # Tkinter imports for GUI
 import tkinter as tk
 from tkinter import ttk, simpledialog
+
 from room import Room
 from player import Player
 from command import Command
@@ -15,11 +21,13 @@ from item import Item
 from character import Character
 from item import Beamer
 from quest import QuestManager, Quest
-from item import Item, Beamer
-from character import Character
-from quest import Quest, QuestManager
+
+DEBUG = True
 
 class Game:
+    """
+    Classe principale du jeu.
+    """
 
     # Constructor Import modules
 
@@ -35,15 +43,26 @@ class Game:
 
 
     def setup(self, player_name=None):
+        """
+        Initialise les pièces, les commandes, le joueur, et les quêtes.
+        """
         # Setup commands
-
+        # pylint: disable=invalid-name, non-ascii-name
         help = Command("help", " : afficher cette aide", Actions.help, 0)
         self.commands["help"] = help
         quit = Command("quit", " : quitter le jeu", Actions.quit, 0)
         self.commands["quit"] = quit
-        go = Command("go", " <direction> : se déplacer dans une direction cardinale (N, E, S, O, U, D, U, D)", Actions.go, 1)
+        go = Command(
+            "go", 
+            " <direction> : se déplacer dans une direction cardinale (N, E, S, O, U, D, U, D)",
+            Actions.go, 1
+        )
         self.commands["go"] = go
-        history = Command("history", " : afficher l'historique des pièces visitées", Actions.history, 0)
+        history = Command(
+            "history", " :" \
+            "afficher l'historique des pièces visitées",
+            Actions.history, 0
+        )
         self.commands["history"] = history
         back = Command("back", " : retourner en arrière", Actions.back, 0)
         self.commands["back"] = back
@@ -57,34 +76,89 @@ class Game:
         self.commands["check"] = check
         beamer_charge = Command("beamer_charge", " : charger le beamer", Actions.beamer_charge, 0)
         self.commands["beamer_charge"] = beamer_charge
-        beamer_teleportation = Command("beamer_teleportation", " : utiliser le beamer pour retourner à l'endroit chargé", Actions.beamer_teleportation, 0)
+        beamer_teleportation = Command(
+            "beamer_teleportation",
+            " : utiliser le beamer pour retourner à l'endroit chargé",
+            Actions.beamer_teleportation, 0
+        )
         self.commands["beamer_teleportation"] = beamer_teleportation
         talk = Command("talk", " <someone> : parler à quelqu'un", Actions.talk, 1)
         self.commands["talk"] = talk
-        use = Command("use", " <item> [on <target>] : utiliser un objet, éventuellement sur une cible", Actions.use, -1)
+        use = Command(
+            "use", " <item> [on <target>] :" \
+            " utiliser un objet, éventuellement sur une cible",
+              Actions.use, -1
+            )
         self.commands["use"] = use
-        give = Command("give", " <item> to <someone> : donner un objet à quelqu'un", Actions.give, -1)
+        give = Command(
+            "give",
+            " <item> to <someone> : donner un objet à quelqu'un",
+            Actions.give, -1
+        )
         self.commands["give"] = give
-        mot_command = Command("mot", "<le_mot> : entrer le mot secret", Actions.check_secret_word, -1)
+        mot_command = Command(
+            "mot",
+            "<le_mot> : entrer le mot secret", 
+            Actions.check_secret_word, -1
+        )
         self.commands["mot"] = mot_command
 
 
          # Setup rooms
-        gare = Room("gare", " la gare de départ de l’Orient Express, entouré de voyageurs élégants et de valises en cuir.", image="gare.png")
+        gare = Room(
+            "gare", " la gare de départ de l’Orient Express," \
+            " entouré de voyageurs élégants et de valises en cuir.",
+            image="gare.png"
+        )
         self.rooms.append(gare)
-        piece1 = Room("piece1", " dans le niveau bas de première classe du premier wagon , luxueusement décoré, avec des sièges en velours, des tables basses et des lampes dorées.", image="piece1.png")
+        piece1 = Room(
+            "piece1",
+            " dans le niveau bas de première classe du premier wagon ," \
+            " luxueusement décoré, avec des sièges en velours," \
+            " des tables basses et des lampes dorées.",
+            image="piece1.png"
+        )
         self.rooms.append(piece1)
-        restaurant= Room("restaurant", " le niveau haut du premier wagon, dans le restaurant somptueux, aux nappes blanches et lumières tamisées.", image="restaurant.png")
+        restaurant= Room(
+            "restaurant",
+            " le niveau haut du premier wagon, dans le restaurant somptueux," \
+            " aux nappes blanches et lumières tamisées.",
+            image="restaurant.png"
+            )
         self.rooms.append(restaurant)
-        dortoir = Room("dortoir", " le niveau bas du deuxième wagon, dans le dortoir de luxe, où les somptueux lits forment un véritable labyrinthe.", image="dortoir.png")
+        dortoir = Room(
+            "dortoir",
+            " le niveau bas du deuxième wagon, dans le dortoir de luxe," \
+            " où les somptueux lits forment un véritable labyrinthe.",
+            image="dortoir.png"
+        )
         self.rooms.append(dortoir)
-        bibliotheque = Room("bibliotheque", " le niveau haut du deuxième wagon dans la bibliothèque silencieuse, remplie de livres anciens.", image="bibliotheque.png")
+        bibliotheque = Room(
+            "bibliotheque",
+            " le niveau haut du deuxième wagon dans la bibliothèque silencieuse," \
+            " remplie de livres anciens.",
+            image="bibliotheque.png"
+        )
         self.rooms.append(bibliotheque)
-        espace_bagage = Room("espace_bagage", " le niveau bas du troisième wagon dans l'espace bagage, où valises et coffres s’entassent et quelques affaires traînent sur le sol.", image="espace_bagage.png")
+        espace_bagage = Room(
+            "espace_bagage",
+            " le niveau bas du troisième wagon dans l'espace bagage, " \
+            " où valises et coffres s’entassent et quelques affaires traînent sur le sol.",
+            image="espace_bagage.png"
+        )
         self.rooms.append(espace_bagage)
-        bureau_du_maitre_du_Jeu = Room("bureau_du_Maitre_du_jeu", " le niveau haut du troisième wagon dans le bureau du Maitre du jeu , sombre et silencieux, où le contrôleur vous observe attentivement.", image="bureau_du_Maitre_du_jeu.png")
+        bureau_du_maitre_du_Jeu = Room(
+            "bureau_du_Maitre_du_jeu",
+            " le niveau haut du troisième wagon dans le bureau du Maitre du jeu ," \
+            " sombre et silencieux, où le contrôleur vous observe attentivement.",
+            image="bureau_du_Maitre_du_jeu.png"
+        )
         self.rooms.append(bureau_du_maitre_du_Jeu)
-        locomotive = Room("locomotive", " la locomotive! Félicitations vous arrivez à votre destination ! Bon voyage...", image="locomotive.png")
+        locomotive = Room(
+            "locomotive",
+            " la locomotive! Félicitations vous arrivez à votre destination ! Bon voyage...",
+            image="locomotive.png"
+        )
         self.rooms.append(locomotive)
 
                 # Association des quetes aux pièces
@@ -95,17 +169,53 @@ class Game:
         espace_bagage.quest_title = "Quête 5"
         bureau_du_maitre_du_Jeu.quest_title = "Quête 6"
         # Labyrinthe
-        lits_entree = Room("lits_entree", "à l’entrée du niveau bas du deuxième wagon. Les lits sont empilés de manière chaotique, formant des passages étroits. Une faible lumière filtre depuis le sud.", image="lits_entree.png")
+        lits_entree = Room(
+            "lits_entree",
+            "à l’entrée du niveau bas du deuxième wagon." \
+            " Les lits sont empilés de manière chaotique, formant des passages étroits. " \
+            " Une faible lumière filtre depuis le sud.",
+            image="lits_entree.png"
+        )
         self.rooms.append(lits_entree)
-        lits_croisement = Room("lits_croisement", "au centre du labyrinthe. Vous êtes entouré de lits superposés formant un croisement. Des ronflements lointains résonnent dans l’obscurité.", image="lits_croisement.png")
+        lits_croisement = Room(
+            "lits_croisement",
+            "au centre du labyrinthe. " \
+            "Vous êtes entouré de lits superposés formant un croisement. " \
+            "Des ronflements lointains résonnent dans l’obscurité.",
+            image="lits_croisement.png"
+        )
         self.rooms.append(lits_croisement)
-        lits_impasse = Room("lits_impasse", "dans une impasse étouffante. Un mur massif de lits bloque complètement le passage ouest. L’air est lourd et oppressant ; il faut revenir en arrière.", image="lits_impasse.png")
+        lits_impasse = Room(
+            "lits_impasse",
+            "dans une impasse étouffante. " \
+            "Un mur massif de lits bloque complètement le passage ouest. " \
+            "L’air est lourd et oppressant ; il faut revenir en arrière.",
+            image="lits_impasse.png"
+        )
         self.rooms.append(lits_impasse)
-        lits_boucle = Room("lits_boucle", "dans un passage qui semble tourner en rond. Vous reconnaissez un matelas déchiré que vous avez déjà vu… attention à ne pas boucler indéfiniment.", image="lits_boucle.png")
+        lits_boucle = Room(
+            "lits_boucle",
+            "dans un passage qui semble tourner en rond." \
+            " Vous reconnaissez un matelas déchiré que vous avez déjà vu… " \
+            " attention à ne pas boucler indéfiniment.",
+            image="lits_boucle.png"
+        )
         self.rooms.append(lits_boucle)
-        lits_vers_biblio = Room("lits_vers_biblio", "dans un passage qui monte légèrement. Une odeur familière de vieux papier et une lumière plus chaude proviennent du nord. C’est prometteur.", image="lits_vers_biblio.png")
+        lits_vers_biblio = Room(
+            "lits_vers_biblio",
+            "dans un passage qui monte légèrement." \
+            " Une odeur familière de vieux papier et une lumière plus chaude proviennent du nord." \
+            " C’est prometteur.",
+            image="lits_vers_biblio.png"
+        )
         self.rooms.append(lits_vers_biblio)
-        lits_sortie = Room("lits_sortie", "à la sortie du labyrinthe ! Vous apercevez une échelle menant vers le niveau supérieur. Vous avez réussi cette épreuve.", image="lits_sortie.png")
+        lits_sortie = Room(
+            "lits_sortie",
+            "à la sortie du labyrinthe !" \
+            " Vous apercevez une échelle menant vers le niveau supérieur." \
+            " Vous avez réussi cette épreuve.",
+            image="lits_sortie.png"
+        )
         self.rooms.append(lits_sortie)
 
 
@@ -116,22 +226,90 @@ class Game:
         r = name_to_room
 
          # Create exits for rooms
-        gare.exits = {"N" : None, "E" : piece1, "S" : None, "O" : None,"U" : None, "D" : None}
-        piece1.exits = {"N" :None , "E" : None, "S" : None, "O" : None, "U" : restaurant, "D" : None}
-        restaurant.exits = {"N" : dortoir, "E" : None, "S" : None, "O" : None, "U" : None, "D" : piece1}
-        dortoir.exits = {"N" : None, "E" : None, "S" : None, "O" : None, "U" : None , "D" : bibliotheque}
-        bibliotheque.exits = {"N" : espace_bagage, "E" : None, "S" : None, "O" : None, "U" : None, "D" : dortoir }
-        espace_bagage.exits = {"N" : None, "E" : None, "S" : None, "O" : None, "U" : bureau_du_maitre_du_Jeu, "D" : None}
-        bureau_du_maitre_du_Jeu.exits = {"N" : locomotive, "E" : None, "S" : None, "O" : None, "U" : None, "D" : espace_bagage}
-        locomotive.exits = {"N" : None, "E" : None, "S" : None, "O" : None,"U" : None, "D" : None}
+        gare.exits = {
+            "N" : None,
+            "E" : piece1,
+            "S" : None,
+            "O" : None,
+            "U" : None,
+            "D" : None
+        }
+        piece1.exits = {
+            "N" :None ,
+            "E" : None,
+            "S" : None,
+            "O" : None,
+            "U" : restaurant,
+            "D" : None
+        }
+        restaurant.exits = {
+            "N" : dortoir,
+            "E" : None,
+            "S" : None,
+            "O" : None,
+            "U" : None,
+            "D" : piece1
+        }
+        dortoir.exits = {
+            "N" : None,
+            "E" : None,
+            "S" : None,
+            "O" : None,
+            "U" : None ,
+            "D" : bibliotheque
+        }
+        bibliotheque.exits = {
+            "N" : espace_bagage,
+            "E" : None,
+            "S" : None,
+            "O" : None,
+            "U" : None,
+            "D" : dortoir
+        }
+        espace_bagage.exits = {
+            "N" : None,
+            "E" : None,
+            "S" : None,
+            "O" : None,
+            "U" : bureau_du_maitre_du_Jeu, 
+             "D":None
+        }
+        bureau_du_maitre_du_Jeu.exits = {
+            	"N": locomotive, 
+            	"E":None, 
+            	"S":None, 
+            	"O":None, 
+            	"D":espace_bagage
+        }
+        locomotive.exits = {
+            "N" : None,
+            "E" : None,
+            "S" : None,
+            "O" : None,
+            "U" : None, 
+            "D" : None
+        }
 
-        r["dortoir"].exits.update({"N": r["lits_croisement"], "S": r["restaurant"]})
-        r["lits_croisement"].exits.update({"S": r["lits_entree"], "O": r["lits_impasse"], "E": r["lits_vers_biblio"], "N": r["lits_boucle"]})
+        r["dortoir"].exits.update({
+            "N": r["lits_croisement"],
+            "S": r["restaurant"]
+        })
+        r["lits_croisement"].exits.update({
+            "S": r["lits_entree"],
+            "O": r["lits_impasse"],
+            "E": r["lits_vers_biblio"],
+            "N": r["lits_boucle"]
+        })
         r["lits_impasse"].exits["E"] = r["lits_croisement"]
         r["lits_boucle"].exits["S"] = r["lits_croisement"]
-        r["lits_vers_biblio"].exits.update({"O": r["lits_croisement"], "N": r["lits_sortie"]})
-        r["lits_sortie"].exits.update({"S": r["lits_vers_biblio"], "U": r["bibliotheque"]})
-
+        r["lits_vers_biblio"].exits.update({
+            "O": r["lits_croisement"],
+            "N": r["lits_sortie"]
+        })
+        r["lits_sortie"].exits.update({
+            "S": r["lits_vers_biblio"],
+            "U": r["bibliotheque"]
+        })
 
 
 
@@ -146,7 +324,11 @@ class Game:
         livre = Item("livre", "Un livre ouvert sur un siège", 1)
         clé = Item("clé", "Une clé ancienne et rouillée", 0.5)
         note = Item("note", "Une petite note mystérieuse", 0.05)
-        MadameLoisel = Character("MadameLoisel", "Une femme élégante et mystérieuse.", piece1, ["Avez-vous vu mon collier perdu"])
+        MadameLoisel = Character(
+            "MadameLoisel",
+            "Une femme élégante et mystérieuse.",
+            piece1, ["Avez-vous vu mon collier perdu"]
+        )
             # Pas de clé au début
 
 
@@ -160,7 +342,12 @@ class Game:
         serviette = Item("serviette", "Une serviette en tissu blanc", 0.1)
         livre_recettes = Item("livre", "Un livre détaillant diverses recettes", 0.7)
         sel = Item("sel", "Un sel de table", 0.2)  # objet crucial
-        Gouteur = Character("Gouteur", "Un personnage qui goûte les plats.", restaurant, ["Attention il ne faut pas m'empoisonner!"])
+        Gouteur = Character(
+            "Gouteur",
+            "Un personnage qui goûte les plats.",
+            restaurant, ["Attention il ne faut pas m'empoisonner!",
+                        "Le sel est essentiel pour relever le goût des plats." ]
+        )
 
         # Ajouter des items à wagon_bibliothèque
         livre1 = Item("livre1", "spleen1", 1)
@@ -169,20 +356,42 @@ class Game:
         livre4 = Item("livre4", "le rouge et le nOir", 1)
         livre5 = Item("livre5", "l'omBre du vent", 1)
         livre6 = Item("livre6", "poweR", 1)
-        beamer= Item("beamer", "Un appareil qui permet de mémoriser des lieux.", 1)
-        Bibliothécaire = Character("Bibliothécaire", "Un personnage qui garde les livres.", bibliotheque, ["Chut! Ici c'est une bibliothèque."])
+        beamer = Item("beamer", "Un appareil qui permet de mémoriser des lieux.", 1)
+        Bibliothécaire = Character(
+            "Bibliothécaire",
+            "Un personnage qui garde les livres.",
+            bibliotheque,
+            ["Chut! Ici c'est une bibliothèque."]
+        )
 
         # Ajouter des items à wagon_bagagiste
-        montre = Item("montre", "descrip", 1)
-        parapluie = Item("parapluie", "descrip", 1)
-        lettre = Item("lettre", "descrip", 1)
-        Paul = Character("Paul", "Voyageur", espace_bagage, ["Je ne pars jamais sans vérifier l’heure, surtout quand le train s’arrête."])
-        Claire = Character("Claire", "Voyageuse", espace_bagage, ["J’aime que mes affaires restent sèches."])
-        Henri = Character("Henri", "Voyageur", espace_bagage, ["Je n’oublie jamais mes messages, ils contiennent des secrets importants."])
+        montre = Item("montre", "montre rouillée", 1)
+        parapluie = Item("parapluie", "parapluie en toile", 1)
+        lettre = Item("lettre", "lettre pliée", 1)
+        Paul = Character(
+            "Paul", "Voyageur",
+            espace_bagage,
+            ["Je ne pars jamais sans vérifier l’heure, surtout quand le train s’arrête."]
+        )
+        Claire = Character(
+            "Claire",
+            "Voyageuse",
+            espace_bagage,
+            ["J’aime que mes affaires restent sèches."]
+        )
+        Henri = Character(
+            "Henri",
+            "Voyageur",
+            espace_bagage,
+            ["Je n’oublie jamais mes messages, ils contiennent des secrets importants."]
+        )
 
-        Controleur = Character("Contrôleur", "Le maître du jeu.", bureau_du_maitre_du_Jeu, ["La mémoire est quelque chose de très important dans ce train."])
-
-
+        Controleur = Character(
+            "Contrôleur",
+            "Le maître du jeu.",
+            bureau_du_maitre_du_Jeu,
+            ["La mémoire est quelque chose de très important dans ce train."]
+        )
 
         piece1.inventory[coffre.name] = coffre
         piece1.inventory[tapis.name] = tapis
@@ -246,7 +455,6 @@ class Game:
             self.direction.update(room.exits.keys())
 
 
-
     def _setup_quests(self):
         """Initialize all quests."""
         quete1 = Quest(
@@ -306,7 +514,8 @@ class Game:
         quete6 = Quest(
             title="Quête 6",
             description=(
-                "Vous êtes dans le niveau haut du troisième wagon, dans le bureau du maitre du jeu.\n"
+                "Vous êtes dans le niveau haut du troisième wagon, "
+                "dans le bureau du maitre du jeu.\n"
                 "Objectif : répondre correctement a toutes les questions."
             ),
             objectives=["utiliser votre mémoire ou le beamer"],
@@ -327,6 +536,9 @@ class Game:
 
     # Play the game
     def play(self):
+        """
+        Lance la boucle principale du jeu.
+        """
         self.setup()
         self.print_welcome()
 
@@ -338,6 +550,9 @@ class Game:
 
     # Process the command entered by the player
     def process_command(self, command_string) -> None:
+        """
+        Traite la commande entrée par le joueur.
+        """
     # Remove leading/trailing spaces
         command_string = command_string.strip()
 
@@ -360,7 +575,9 @@ class Game:
     # If the command is not recognized, print an error message
     # If the command is not recognized, print an error message
         if command_word not in self.commands.keys():
-            print(f"\nCommande '{command_word}' non reconnue. Entrez 'help' pour voir la liste des commandes disponibles.\n")
+            print(f"\nCommande '{command_word}' non reconnue."
+                  " Entrez 'help' pour voir la liste des commandes disponibles.\n")
+            return
     # If the command is recognized, execute it
     # If the command is recognized, execute it
 
@@ -374,7 +591,9 @@ class Game:
             self.finished = True
 
         elif self.loose():
-            print("\n☠️ Vous avez perdu la partie. Game Over.Le wagon se détache, vous ne pouvvez pas arriver à destination!!!\n")
+            print("\n☠️ Vous avez perdu la partie."
+                  " Game Over.Le wagon se détache, "
+                  "vous ne pouvez pas arriver à destination!!!\n")
             self.finished = True
 
 
@@ -382,13 +601,20 @@ class Game:
 
     # Print the welcome message
     def print_welcome(self):
-        print(f"\nBienvenue {self.player.name} prenez place : votre aventure commence à bord de l’Orient Expres !")
+        """
+        Affiche le message de bienvenue au joueur.
+        """
+        print(f"\nBienvenue {self.player.name} prenez place : "
+              "votre aventure commence à bord de l’Orient Express !")
         print("Entrez 'help' si vous avez besoin d'aide.")
         #
         print(self.player.current_room.get_long_description())
 
 
     def win(self):
+        """
+        MODIF : fonction de TEST de victoire (nom imposé par l’énoncé)
+        """
     # Vérifie si la quête 6 du joueur est terminée
         if len(self.player.quest_manager.quests) >= 6:
             return self.player.quest_manager.quests[5].is_completed
@@ -396,6 +622,9 @@ class Game:
 
 
     def check_win(self):
+        """
+        Vérifie si le joueur a gagné la partie.
+        """
         if self.win():
             print("🎉 Toutes les quêtes ont été validées ! Vous avez gagné !")
             self.finished = True  # Termine automatiquement la boucle du jeu

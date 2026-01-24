@@ -1,4 +1,10 @@
+"""
+Module character.
+
+Gère les personnages (PNJ) du jeu et leurs déplacements.
+"""
 import random
+
 
 
 class Character:
@@ -22,8 +28,10 @@ class Character:
         return f"{self.name} : {self.description}"
 
     def move(self):
+        """
+        Déplace le personnage vers une pièce voisine si possible.
+        """
         from game import DEBUG
-
         if self.name in ["Gouteur", "Contrôleur", "Paul", "Claire", "Henri"]:
             if DEBUG:
                 print(f"DEBUG: {self.name} reste dans {self.current_room.name}.")

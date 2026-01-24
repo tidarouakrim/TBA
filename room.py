@@ -1,3 +1,8 @@
+"""
+Module room.
+
+Définit la classe Room représentant un lieu du jeu.
+"""
 # Define the Room class.
 
 class Room:
@@ -34,16 +39,30 @@ class Room:
 
     # Define the get_exit method.
     def get_exit(self, direction):
+        """
+        Retourne la pièce associée à une direction donnée.
+
+        Args:
+            direction (str): direction demandée
+
+        Returns:
+            Room | None: la pièce correspondante ou None
+        """
         # Return the room in the given direction if it exists.
-        if direction in self.exits.keys():
+        if direction in self.exits:
             return self.exits[direction]
-        else:
-            return None
+        return None
 
     # Return a string describing the room's exits.
     def get_exit_string(self):
+        """
+        Retourne une chaîne listant les sorties disponibles.
+
+        Returns:
+            str: description des sorties
+        """
         exit_string = "Sorties: "
-        for exit in self.exits.keys():
+        for exit in self.exits:
             if self.exits.get(exit) is not None:
                 exit_string += exit + ", "
         exit_string = exit_string.strip(", ")
@@ -51,6 +70,12 @@ class Room:
 
     # Return a long description of this room including exits.
     def get_long_description(self):
+        """
+        Retourne la description complète de la pièce.
+
+        Returns:
+            str: description longue de la pièce
+        """
         return f"\nVous êtes dans{self.description}\n\n{self.get_exit_string()}\n"
 
     def get_inventory(self):
