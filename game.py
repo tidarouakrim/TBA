@@ -474,7 +474,7 @@ class Game:
             description=(
                 "Vous êtes dans le niveau haut du wagon, dans le restaurant.\n"
                 "le repas est empoisonné.\n"
-                "Objectif : trouver quel repas est empoisonné."
+                "Objectif : trouver quel repas est empoisonné.Le sel peut aider."
             ),
             objectives=["utiliser le sel"],
             reward="repas sain et sauf"
