@@ -145,3 +145,118 @@ En cas de réussite : arrivée à la locomotive → victoire !
 - `activate <titre>` → activer une quête
 
 Bon jeu et bon voyage dans l’Orient Express ! 
+## Diagramme de Classes
+
+```mermaid
+classDiagram
+    Game --> Player
+    Game --> Room
+    Game --> Command
+    Player --> QuestManager
+    Player --> Room
+    Room --> Item
+    Room --> Character
+    QuestManager --> Quest
+    Item --> Beamer
+    
+    class Game {
+        bool finished
+        list rooms
+        dict commands
+        Player player
+        set direction
+        int lives
+        setup(player_name)
+        play()
+        process_command(command_string)
+        win()
+        loose()
+    }
+    
+    class GameGUI {
+        Game game
+        int IMAGE_WIDTH
+        int IMAGE_HEIGHT
+        _build_layout()
+        _update_room_image()
+        _send_command(command)
+    }
+    
+    class Player {
+        str name
+        Room current_room
+        list history
+        dict inventory
+        float max_weight
+        int move_count
+        list found_letters
+        int lives
+        move(direction)
+        back()
+        get_history()
+        get_inventory()
+        current_weight()
+    }
+    
+    class Room {
+        str name
+        str description
+        str image
+        dict exits
+        dict inventory
+        dict characters
+        get_exit(direction)
+        get_exit_string()
+        get_long_description()
+        get_inventory()
+    }
+    
+    class Item {
+        str name
+        str description
+        float weight
+    }
+    
+    class Beamer {
+        Room charged_room
+    }
+    
+    class Character {
+        str name
+        str description
+        Room current_room
+        list msgs
+        move()
+        get_msg()
+    }
+    
+    class Command {
+        str command_word
+        str help_string
+        action
+        int number_of_parameters
+    }
+    
+    class Quest {
+        str title
+        str description
+        list objectives
+        list completed_objectives
+        bool is_completed
+        bool is_active
+        str reward
+        activate()
+        complete_objective(objective, player)
+        complete_quest(player)
+        get_status()
+    }
+    
+    class QuestManager {
+        list quests
+        list active_quests
+        Player player
+        add_quest(quest)
+        activate_quest(title)
+        complete_objective(objective)
+        check_action_objectives(action, target)
+    }
